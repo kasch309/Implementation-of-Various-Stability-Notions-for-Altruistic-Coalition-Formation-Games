@@ -15,18 +15,17 @@
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon">Add</button>
                 </label>
             </form>
-            <div class="input-group mb-3">
-                <form th:each="element:${player_set}" style="padding: 20px" th:action="@{/removePlayerFromGame}" method="post">
+            <div class="input-group mb-3" th:each="element:${player_set}">
+                <form style="padding: 20px" th:action="@{/removePlayerFromGame}" method="post">
                     <label>
                         <input th:name="name" th:value="${element.value.getName()}" type="text" class="form-control" placeholder="Player name">
                     </label>
                     <button th:value="${element.value}" th:name="playerRemove" class="btn btn-primary" type="submit" id="button-remove-player">Remove</button>
-                    <select class="form-select" aria-label="coalitionSelect" onchange="this.form.submit()">
-                        <option th:action="@{/addPlayerToCoalition}" th:name="addToCoalKey" th:value="${element.key}" th:text="${coalition.getName()} ?: 'Choose a coalition'" th:each="coalition:${coalition_structure}"></option>
-                    </select>
                 </form>
-                <form>
-
+                <form th:action="@{/addPlayerToCoalition}" method="post">
+                    <select class="form-select" aria-label="coalitionSelect" onchange="this.form.submit()">
+                        <option  th:name="addToCoalKey" th:value="${element.key}" th:text="${coalition.getName()} ?: 'Choose a coalition'" th:each="coalition:${coalition_structure}"></option>
+                    </select>
                 </form>
             </div>
         </div>

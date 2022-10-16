@@ -74,7 +74,7 @@ public class Controller {
     }
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
-    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Player c){
+    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Coalition c){
         cs.remove(c);
         return re;
     }
