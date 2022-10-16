@@ -21,6 +21,7 @@ public class Coalition extends HashSet<Player> {
     }
 
 
+
     public void addPlayerSet(PlayerSet ps){
         for (int i = 0; i < ps.size(); i++){
             this.add(ps.get(i));

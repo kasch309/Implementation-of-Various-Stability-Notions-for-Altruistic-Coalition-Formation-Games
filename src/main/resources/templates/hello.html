@@ -22,9 +22,9 @@
                     </label>
                     <button th:value="${element.value}" th:name="playerRemove" class="btn btn-primary" type="submit" id="button-remove-player">Remove</button>
                 </form>
-                <form th:action="@{/addPlayerToCoalition}" method="post">
+                <form th:action="@{/addPlayerToCoalition}"  th:name="addToCoalKey" th:value="${element.key}" method="post">
                     <select class="form-select" aria-label="coalitionSelect" onchange="this.form.submit()">
-                        <option  th:name="addToCoalKey" th:value="${element.key}" th:text="${coalition.getName()} ?: 'Choose a coalition'" th:each="coalition:${coalition_structure}"></option>
+                        <option th:text="${coalition.getName()}" th:each="coalition:${coalition_structure}"></option>
                     </select>
                 </form>
             </div>

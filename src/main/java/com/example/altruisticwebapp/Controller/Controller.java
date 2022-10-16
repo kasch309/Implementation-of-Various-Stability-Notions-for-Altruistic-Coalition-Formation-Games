@@ -67,15 +67,16 @@ public class Controller {
     }
 
     @PostMapping("/addPlayerToCoalition")
-    public String addPlayerToCoalition(@RequestParam("addToCoalKey") int key, @RequestParam("coalition_id") String cname) throws NoPlayerSetAssignedException, PlayerNotFoundException {
-        cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
-        cs.getCoalition(cname).add(g.getPlayer(key));
+    public String addPlayerToCoalition(@RequestParam("addToCoalKey") Player p, @RequestParam("coalitionId") String cname) throws NoPlayerSetAssignedException, PlayerNotFoundException {
+        //cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
+        //cs.getCoalition(cname).add(g.getPlayer(key));
         return re;
     }
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
     public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Coalition c){
         cs.remove(c);
+
         return re;
     }
 
