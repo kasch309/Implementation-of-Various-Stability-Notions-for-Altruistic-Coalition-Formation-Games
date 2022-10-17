@@ -39,8 +39,11 @@ public class Controller {
         if (name.equals("")) {
             name = "Player " + (g.getSize() + 1);
         }
+
         Player p = new Player(name);
+        if (!cs.isEmpty()) cs.get(0).add(p);
         g.addPlayer(p);
+
         return re;
     }
 
