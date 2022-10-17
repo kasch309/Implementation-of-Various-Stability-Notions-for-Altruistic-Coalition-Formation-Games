@@ -87,7 +87,9 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         for (int i = 0; i < pos.length; i++){
             c[pos[i]-1].add(get(i));
         }
-        cs.addAll(Arrays.asList(c));
+        for (int i = 0; i < c.length; i++){
+            cs.addCoalition(c[i]);
+        }
     }
 
     public void removePlayer(Player p, NetworkOfFriends nw){

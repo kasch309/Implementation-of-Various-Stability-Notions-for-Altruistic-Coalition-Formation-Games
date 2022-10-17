@@ -55,10 +55,6 @@ public class Game {
         ps.add(p, this.nw);
     }
 
-
-
-
-
     public void initFromNetwork() throws NoNetworkAssignedException {
         this.ps = new PlayerSet(nw.getSize());
     }
@@ -76,7 +72,7 @@ public class Game {
         for (int i = 0; i < getSize(); i++){
             Coalition c = new Coalition();
             c.add(ps.get(i));
-            singletons.add(c);
+            singletons.addCoalition(c);
         }
         return singletons;
     }
@@ -87,7 +83,7 @@ public class Game {
         for (int i = 0; i < getSize(); i++){
             c.add(ps.get(i));
         }
-        allInOne.add(c);
+        allInOne.addCoalition(c);
         return allInOne;
     }
 }

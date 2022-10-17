@@ -6,63 +6,63 @@
 
     <title>AHG</title>
 </head>
-<body>
-<div style="; padding: 10px">
-    <div class="input-group mb-3">
-        <form method="post" th:action="@{/addPlayer}">
-            <label>
-                <input th:name="name" type="text" class="form-control" placeholder="Player name">
-                <button class="btn btn-primary" type="submit" id="button-addon">Add</button>
-            </label>
-        </form>
-        <div class="input-group mb-3" th:each="element:${player_set}">
-            <form th:action="@{/removePlayerFromGame}" method="post" id="removePlayer">
+    <body>
+    <div style="; padding: 10px">
+        <div class="input-group mb-3">
+            <form method="post" th:action="@{/addPlayer}">
                 <label>
-                    <input th:name="name" th:value="${element.value.getName()}" type="text" class="form-control" placeholder="Player name">
+                    <input th:name="name" type="text" class="form-control" placeholder="Player name">
+                    <button class="btn btn-primary" type="submit" id="button-addon">Add</button>
                 </label>
-                <button th:value="${element.value}" form="removePlayer" th:name="playerRemove" class="btn btn-primary" type="submit" id="button-remove-player">Remove</button>
             </form>
-            <form th:action="@{/addPlayerToCoalition}" id="addCoal" method="post">
-                <input type="hidden" th:name="player" th:value="${element.key}"/>
-                <select  th:if="${!coalition_structure.isEmpty()}" class="form-select" aria-label="coalitionSelect" th:name="coalitionId"  form="addCoal" onchange="this.form.submit()">
-                    <option th:if="${!coalition_structure.getPlayersCoalition(element.value).getName().equals(null)}" selected th:text="${coalition_structure.getPlayersCoalition(element.value).getName()}"></option>
-                    <option th:if="${!coalition.getName().equals(coalition_structure.getPlayersCoalition(element.value).getName())}" th:text="${coalition.getName()}" th:value="${coalition}" th:each="coalition:${coalition_structure}"></option>
-                </select>
-            </form>
+            <div class="input-group mb-3" th:each="element:${player_set}">
+                <form th:action="@{/removePlayerFromGame}" method="post" id="removePlayer">
+                    <label>
+                        <input th:name="name" th:value="${element.value.getName()}" type="text" class="form-control" placeholder="Player name">
+                    </label>
+                    <button th:value="${element.value}" form="removePlayer" th:name="playerRemove" class="btn btn-primary" type="submit" id="button-remove-player">Remove</button>
+                </form>
+                <form th:action="@{/addPlayerToCoalition}" id="addCoal" method="post">
+                    <input type="hidden" th:name="player" th:value="${element.key}"/>
+                    <select  th:if="${!coalition_structure.isEmpty()}" class="form-select" name="coalitionId" id="coalitionId" aria-label="coalitionSelect"  form="addCoal" onchange="this.form.submit()">
+                        <option th:if="${coalition_structure.getPlayersCoalition(element.value) != null}" selected th:text="${coalition_structure.getPlayersCoalition(element.value).getName()}"></option>
+                        <option th:name="coalitionId"  th:if="${coalition_structure.getPlayersCoalition(element.value) != null && !coalition.getName().equals(coalition_structure.getPlayersCoalition(element.value).getName())}" th:text="${coalition.getName()}" th:value="${coalition}" th:each="coalition:${coalition_structure}"></option>
+                    </select>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <div class="overflow-auto mb-3">
-        <span>Add coalitions to the coalition structure</span>
-        <form method="post" th:action="@{/addCoalition}">
-            <label>Coalition ID:
-                <input class="form-control" required th:name="coalitionInput" placeholder="Coalition ID"/>
-            </label>
-            <button class="btn btn-primary" type="submit">Add</button>
-        </form>
-        <div >
-            <form th:each="coalition:${coalition_structure}" method="post" th:action="@{/removeCoalitionFromCoalitionStructure}">
-                <span th:name="coalitionId" th:value="${coalition.getName()}" th:text="${coalition.getName()}"></span>
-                <button class="btn btn-primary"  th:name="coalitionRemove" th:value="${coalition}" type="submit">Remove</button>
+        <div class="overflow-auto mb-3">
+            <span>Add coalitions to the coalition structure</span>
+            <form method="post" th:action="@{/addCoalition}">
+                <label>Coalition ID:
+                    <input class="form-control" required th:name="coalitionInput" placeholder="Coalition ID"/>
+                </label>
+                <button class="btn btn-primary" type="submit">Add</button>
             </form>
+            <div >
+                <form th:each="coalition:${coalition_structure}" method="post" th:action="@{/removeCoalitionFromCoalitionStructure}">
+                    <span th:name="coalitionId" th:value="${coalition.getName()}" th:text="${coalition.getName()}"></span>
+                    <button class="btn btn-primary"  th:name="coalitionRemove" th:value="${coalition}" type="submit">Remove</button>
+                </form>
 
+            </div>
+        </div>
+        <div>
+            <form th:action="@{/resetGame}">
+                <button class="btn btn-primary" type="submit">Reset game</button>
+            </form>
         </div>
     </div>
     <div>
-        <form th:action="@{/resetGame}">
-            <button class="btn btn-primary" type="submit">Reset game</button>
-        </form>
-    </div>
-</div>
-<div>
-    <div class="input-group">
-        <div class="input-group-text">
-            <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input">
-            <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input">
+        <div class="input-group">
+            <div class="input-group-text">
+                <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input">
+                <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input">
+            </div>
+            <input type="text" class="form-control" aria-label="Text input with radio button">
         </div>
-        <input type="text" class="form-control" aria-label="Text input with radio button">
     </div>
-</div>
 
-</body>
+    </body>
 </html>

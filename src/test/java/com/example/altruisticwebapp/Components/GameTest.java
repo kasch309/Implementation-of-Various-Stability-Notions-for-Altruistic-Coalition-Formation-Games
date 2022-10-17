@@ -50,7 +50,8 @@ class GameTest {
     void singletons() throws NoPlayerSetAssignedException {
         Game g = new Game(5);
         CoalitionStructure singletons = g.singletons();
-        for (Coalition c : singletons){
+        for (int i = 0; i < singletons.size(); i++){
+            Coalition c = singletons.get(i);
             assertEquals(1, c.size());
         }
         assertEquals(5, singletons.size());
@@ -61,7 +62,8 @@ class GameTest {
     void allInOne() throws NoPlayerSetAssignedException {
         Game g = new Game(5);
         CoalitionStructure allInOne = g.allInOne();
-        for (Coalition c : allInOne){
+        for (int i = 0; i < allInOne.size(); i++){
+            Coalition c = allInOne.get(i);
             assertEquals(5, c.size());
         }
         assertEquals(1, allInOne.size());

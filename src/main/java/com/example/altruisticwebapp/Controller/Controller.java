@@ -17,11 +17,13 @@ import java.util.Map.Entry;
 @org.springframework.stereotype.Controller
 public class Controller {
 
-    Game g = new Game(5);
-    CoalitionStructure cs = new CoalitionStructure();
+    Game g;
+    CoalitionStructure cs;
     String re = "redirect:";
 
-    public Controller() throws NoPlayerSetAssignedException {
+    public Controller() {
+        cs = new CoalitionStructure();
+        g = new Game(0);
     }
 
     @GetMapping("/")
@@ -37,7 +39,8 @@ public class Controller {
         if (name.equals("")) {
             name = "Player " + (g.getSize() + 1);
         }
-        g.addPlayer(name);
+        Player p = new Player(name);
+        g.addPlayer(p);
         return re;
     }
 
@@ -46,10 +49,10 @@ public class Controller {
         if (cs.isEmpty()){
             Coalition init = new Coalition(coalitionId);
             init.addPlayerSet(g.getPlayers());
-            cs.add(init);
+            cs.addCoalition(init);
             return re;
         }
-        cs.add(new Coalition(coalitionId));
+        cs.addCoalition(new Coalition(coalitionId));
         return re;
     }
 
@@ -69,7 +72,12 @@ public class Controller {
     @PostMapping("/addPlayerToCoalition")
     public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") Coalition coal)
             throws NoPlayerSetAssignedException, PlayerNotFoundException {
-        cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
+        try {
+            cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
+        }
+        catch (PlayerNotFoundException e){
+            return null;
+        }
         coal.add(g.getPlayer(key));
         return re;
     }
