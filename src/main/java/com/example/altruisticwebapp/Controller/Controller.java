@@ -24,7 +24,6 @@ public class Controller {
     public Controller() throws NoPlayerSetAssignedException {
     }
 
-
     @GetMapping("/")
     public String home(Model model) throws NoPlayerSetAssignedException {
         model.addAttribute("player_set", g.getPlayers());
@@ -33,9 +32,10 @@ public class Controller {
     }
 
     @PostMapping("/addPlayer")
-    public String addPlayer(@RequestParam("name") String name) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
-        if (name.equals("")){
-            name = "Player " + (g.getSize()+1);
+    public String addPlayer(@RequestParam("name") String name)
+            throws NoPlayerSetAssignedException, NoNetworkAssignedException {
+        if (name.equals("")) {
+            name = "Player " + (g.getSize() + 1);
         }
         g.addPlayer(name);
         return re;
@@ -54,36 +54,30 @@ public class Controller {
     }
 
     @GetMapping("/resetGame")
-    public String resetGame(){
+    public String resetGame() {
         g = new Game(0);
         cs = new CoalitionStructure();
         return re;
     }
 
     @PostMapping("/removePlayerFromGame")
-    public String removePlayerFromGame(@RequestParam("playerRemove") Player p){
+    public String removePlayerFromGame(@RequestParam("playerRemove") Player p) {
         g.removePlayer(p);
         return re;
     }
 
     @PostMapping("/addPlayerToCoalition")
-    public String addPlayerToCoalition(@RequestParam("addToCoalKey") Player p, @RequestParam("coalitionId") String cname) throws NoPlayerSetAssignedException, PlayerNotFoundException {
-        //cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
-        //cs.getCoalition(cname).add(g.getPlayer(key));
+    public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") Coalition coal)
+            throws NoPlayerSetAssignedException, PlayerNotFoundException {
+        cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
+        coal.add(g.getPlayer(key));
         return re;
     }
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
-    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Coalition c){
+    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Coalition c) {
         cs.remove(c);
-
         return re;
     }
-
-
-
-
-
-
 
 }
