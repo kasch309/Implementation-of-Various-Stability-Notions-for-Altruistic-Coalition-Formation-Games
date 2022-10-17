@@ -54,7 +54,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             Coalition c = this.get(i);
             if (c.contains(p)) return c;
         }
-        throw new PlayerNotFoundException(p.getName());
+        return null;
     }
 
     public HashSet<Coalition> blockingCoalitions(Game g) throws PlayerNotFoundException, NoNetworkAssignedException, NoPlayerSetAssignedException {

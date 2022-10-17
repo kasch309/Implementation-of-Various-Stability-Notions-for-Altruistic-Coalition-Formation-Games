@@ -23,6 +23,20 @@ class CoalitionStructureTest {
     }
 
     @Test
+    void removePlayersAndGetCoalitions() throws NoPlayerSetAssignedException, NoNetworkAssignedException {
+        Game g = new Game(6);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c = new Coalition();
+        Coalition d = new Coalition();
+        cs.addCoalition(c);
+        cs.addCoalition(d);
+        cs.get(0).add(g.getPlayer(0));
+        g.removePlayer(g.getPlayer(2));
+        g.addPlayer("new player");
+
+    }
+
+    @Test
     void blockingCoalitions() {
     }
 

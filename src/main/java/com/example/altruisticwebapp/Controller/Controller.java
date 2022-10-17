@@ -46,7 +46,7 @@ public class Controller {
 
     @PostMapping("/addCoalition")
     public String addCoalition(@RequestParam("coalitionInput") String coalitionId) throws NoPlayerSetAssignedException {
-        if (cs.isEmpty()){
+        if (cs.isEmpty()) {
             Coalition init = new Coalition(coalitionId);
             init.addPlayerSet(g.getPlayers());
             cs.addCoalition(init);
@@ -70,15 +70,13 @@ public class Controller {
     }
 
     @PostMapping("/addPlayerToCoalition")
-    public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") Coalition coal)
+    public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") int coal)
             throws NoPlayerSetAssignedException, PlayerNotFoundException {
-        try {
-            cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
-        }
-        catch (PlayerNotFoundException e){
-            return null;
-        }
-        coal.add(g.getPlayer(key));
+
+        System.out.println(g.getPlayer(key));
+        System.out.println(coal);
+        cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
+        cs.getCoalition(coal).add(g.getPlayer(key));
         return re;
     }
 

@@ -22,18 +22,13 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         }
     }
     public void add(Player p, NetworkOfFriends nw) {
-        try{
-            if (this.containsPlayerWithName(p.getName())) throw new DuplicatePlayerNameException();
-            p.setKey(this.size());
-            this.put(this.size(), p);
-            nw.addPlayer();
-        }catch (DuplicatePlayerNameException e){
-            //Todo: Output Error Message
-        }
+        p.setKey(this.size());
+        this.put(this.size(), p);
+        nw.addPlayer();
+
     }
     public boolean containsPlayerWithName(String name){
         for (int i = 0; i < this.size(); i++){
-            System.out.println(get(i).getName() + "; i: " + i);
             get(i);
             if (get(i).getName().equals(name)) return true;
         }
@@ -101,15 +96,17 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
             }
         }
         nw.removePlayer(key);
-        for (Integer k : keySet()){
-            System.out.println(k);
-        }
         remove(key);
         for(int i = key+1; i < this.size()+1; i++){
             Player player = get(i);
             remove(i);
+            System.out.println("Old key: " + i);
             player.setKey(i-1);
+            System.out.println("New key: " + player.getKey());
             put(i-1, player);
+        }
+        for (int i = 0; i < this.size(); i++){
+            System.out.println(this.get(i).getKey());
         }
     }
 }
