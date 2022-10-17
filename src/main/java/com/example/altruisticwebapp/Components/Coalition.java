@@ -5,20 +5,17 @@ import java.util.HashSet;
 public class Coalition extends HashSet<Player> {
 
     private String name;
-    private final int scope = 10000000;
-    double id;
 
     public Coalition (){
-        this.id=scope*Math.random();
     }
     public Coalition (String name){
         this.name = name;
-        this.id=scope*Math.random();
     }
 
     public void setName(String name){
         this.name = name;
     }
+
 
 
 

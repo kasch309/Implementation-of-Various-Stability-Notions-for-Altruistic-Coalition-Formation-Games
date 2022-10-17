@@ -14,10 +14,12 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
 
     public void addCoalition(String name){
+        if (name.equals("")) name = "Coalition " + this.size();
         Coalition c = new Coalition(name);
         this.put(this.size(), c);
     }
     public void addCoalition(Coalition c){
+        this.name = "Coalition " + this.size();
         this.put(this.size(), c);
     }
     public boolean containsName(String name){
