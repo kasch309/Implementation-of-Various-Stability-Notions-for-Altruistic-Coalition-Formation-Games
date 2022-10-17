@@ -8,11 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoalitionTest {
 
     @Test
-    void ids(){
+    void names(){
         Coalition c = new Coalition();
         Coalition d = new Coalition();
-        System.out.print(c.id + " " + d.id);
-        assertEquals(c, d);
+        CoalitionStructure cs = new CoalitionStructure();
+        cs.addCoalition(c);
+        cs.addCoalition(d);
+        assertEquals("Coalition 0", c.getName());
+        assertEquals("Coalition 1", d.getName());
     }
 
     @Test

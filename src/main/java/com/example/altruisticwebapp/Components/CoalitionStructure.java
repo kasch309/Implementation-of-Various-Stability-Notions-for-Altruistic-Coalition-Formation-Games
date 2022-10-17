@@ -19,8 +19,13 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         this.put(this.size(), c);
     }
     public void addCoalition(Coalition c){
-        this.name = "Coalition " + this.size();
+        if (c.getName().equals("")) c.setName("Coalition " + this.size());
+
         this.put(this.size(), c);
+    }
+
+    public Coalition getCoalition(int key){
+        return this.get(key);
     }
     public boolean containsName(String name){
         for (int i = 0; i < this.size(); i++){

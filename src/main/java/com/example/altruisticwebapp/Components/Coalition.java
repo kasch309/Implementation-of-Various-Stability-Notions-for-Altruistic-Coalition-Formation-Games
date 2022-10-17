@@ -7,6 +7,7 @@ public class Coalition extends HashSet<Player> {
     private String name;
 
     public Coalition (){
+        this.name = "";
     }
     public Coalition (String name){
         this.name = name;
