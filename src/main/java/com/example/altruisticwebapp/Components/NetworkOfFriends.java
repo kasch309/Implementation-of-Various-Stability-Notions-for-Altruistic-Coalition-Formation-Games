@@ -38,8 +38,15 @@ public class NetworkOfFriends{
     }
 
     public void addFriendship(int p1, int p2){
+        if (p1 == p2) return;
         matrix[p1][p2] = 1;
         matrix[p2][p1] = 1;
+    }
+
+    public void removeFriendship(int p1, int p2){
+        if (p1 == p2) return;
+        matrix[p1][p2] = 0;
+        matrix[p2][p1] = 0;
     }
 
     public boolean areFriends (int p1, int p2){

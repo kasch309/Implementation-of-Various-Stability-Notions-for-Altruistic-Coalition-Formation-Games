@@ -99,4 +99,16 @@ public class Controller {
         cs.printCoalitions();
         return re;
     }
+
+    @PostMapping("/addFriendship")
+    public String addFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2) throws NoNetworkAssignedException {
+        g.getNetwork().addFriendship(key1, key2);
+        return re;
+    }
+
+    @PostMapping("/removeFriendship")
+    public String removeFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2) throws NoNetworkAssignedException {
+        g.getNetwork().removeFriendship(key1, key2);
+        return re;
+    }
 }
