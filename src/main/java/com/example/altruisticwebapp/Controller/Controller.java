@@ -22,11 +22,13 @@ public class Controller {
     }
 
     @GetMapping("/")
-    public String home(Model model) throws NoPlayerSetAssignedException {
+    public String home(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
+        model.addAttribute("friendMatrix", g.getNetwork());
         return "hello";
     }
+
 
     @PostMapping("/addPlayer")
     public String addPlayer(@RequestParam("name") String name)
@@ -62,8 +64,8 @@ public class Controller {
     }
 
     @PostMapping("/removePlayerFromGame")
-    public String removePlayerFromGame(@RequestParam("playerRemove") Player p) {
-        g.removePlayer(p);
+    public String removePlayerFromGame(@RequestParam("playerRemove") int key) throws NoPlayerSetAssignedException {
+        g.removePlayer(g.getPlayer(key));
         return re;
     }
 
@@ -76,34 +78,29 @@ public class Controller {
     }
 
     @PostMapping("/renamePlayer")
-    public String renamePlayer(@RequestParam("renamePlayer") Integer i, @RequestParam("newPlayerName") String name) throws NoPlayerSetAssignedException {
-        g.renamePlayer(i, name);
+    public String renamePlayer(@RequestParam("renamePlayer") int key, @RequestParam("newPlayerName") String name) throws NoPlayerSetAssignedException {
+        g.renamePlayer(key, name);
         return re;
     }
 
     @PostMapping("/renameCoalition")
-    public String renameCoalition(@RequestParam("renameCoalition") Coalition c, @RequestParam("newCoalitionName") String name){
-        cs.renameCoalition(c, name);
+    public String renameCoalition(@RequestParam("renameCoalition") int key, @RequestParam("newCoalitionName") String name){
+        cs.renameCoalition(cs.getCoalition(key), name);
         return re;
     }
     @PostMapping("/removeCoalitionFromCoalitionStructure")
-    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") int i) {
-        System.out.println("Arg: " + i);
-        System.out.println("Name: " + cs.get(i).getName() + "; Key: " + cs.get(i).getKey());
-        cs.removeCoalition(i);
+    public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") int key) {
+        System.out.println("Arg: " + key);
+        System.out.println("Name: " + cs.get(key).getName() + "; Key: " + cs.get(key).getKey());
+        cs.removeCoalition(key);
         cs.printCoalitions();
         return re;
     }
 
     @PostMapping("/addFriendship")
     public String addFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2) throws NoNetworkAssignedException {
-        g.getNetwork().addFriendship(key1, key2);
-        return re;
-    }
-
-    @PostMapping("/removeFriendship")
-    public String removeFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2) throws NoNetworkAssignedException {
-        g.getNetwork().removeFriendship(key1, key2);
+        if (g.getNetwork().areFriends(key1, key2)) g.getNetwork().removeFriendship(key1, key2);
+        else g.getNetwork().addFriendship(key1, key2);
         return re;
     }
 }
