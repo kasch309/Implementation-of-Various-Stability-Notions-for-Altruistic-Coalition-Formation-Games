@@ -66,7 +66,7 @@
                         th:action="@{/renamePlayer}"
                         method="post"
                         id="renamePlayer"
-                        style="width: 14rem;"
+                        style="width: 15rem;"
                         class="input-group"
                 >
 
@@ -74,7 +74,7 @@
                             required
                             th:name="newPlayerName"
                             th:value="${element.value.getName()}"
-                            style="width: 7rem"
+                            style="width: 8rem"
                             type="text"
                             class="form-control"
                             placeholder="Player name"
@@ -204,14 +204,14 @@
                         th:action="@{/renameCoalition}"
                         method="post"
                         id="renameCoalition"
-                        style="width: 14rem;"
+                        style="width: 21rem;"
                         class="input-group"
                     >
                         <input
                                 required
                                 th:name="newCoalitionName"
                                 th:value="${element.value.getName()}"
-                                style="width: 7rem"
+                                style="width: 17rem"
                                 type="text"
                                 class="form-control"
                                 placeholder="Coalition name"
@@ -221,6 +221,7 @@
                             th:value="${element.value.getKey()}"
                             form="renameCoalition"
                             th:name="renameCoalition"
+                            style="border-radius: 0rem"
                             type="submit"
                             id="button-edit-coalition"
                         >
@@ -237,12 +238,22 @@
                                     />
                                 </svg>
                             </button>
+
+                    </form>
+
+                    <form
+                            th:action="@{/removeCoalitionFromCoalitionStructure}"
+                            method="post"
+                            id="removeCoalition"
+                    >
                         <button
                                 class="btn btn-danger"
                                 form="removeCoalition"
-                                style="border-radius: 0rem;"
+                                style="border-radius: 0rem 0.2rem 0.2rem 0rem;"
                                 type="submit"
                                 id="button-remove-coalition"
+                                th:value="${element.value.getKey()}"
+                                th:name="coalitionRemove"
                         >
                             <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -261,13 +272,6 @@
                                 />
                             </svg>
                         </button>
-                    </form>
-                    <form
-                            th:action="@{/removeCoalitionFromCoalitionStructure}"
-                            method="post"
-                            id="removeCoalition"
-                    >
-                        <input th:value="${element.value.getKey()}" th:name="coalitionRemove"/>
                     </form>
                 </div>
             </div>

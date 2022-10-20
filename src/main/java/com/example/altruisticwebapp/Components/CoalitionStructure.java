@@ -55,6 +55,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
     public void removeCoalition(Integer key){
         System.out.println("Key: " + key);
+        for (Player p : this.get(key)){
+            if (key == 0){
+                this.get(1).add(p);
+            }
+            else{
+                this.get(0).add(p);
+            }
+        }
         this.remove(key);
         for(int i = key+1; i < this.size()+1; i++){
             Coalition d = this.get(i);
