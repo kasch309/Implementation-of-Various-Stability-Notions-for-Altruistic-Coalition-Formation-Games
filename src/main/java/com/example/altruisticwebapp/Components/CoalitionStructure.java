@@ -16,14 +16,23 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     public void addCoalition(String name){
         if (name.equals("")) name = "Coalition " + this.size();
         Coalition c = new Coalition(name);
+        c.setKey(this.size());
         this.put(this.size(), c);
     }
     public void addCoalition(Coalition c){
         if (c.getName().equals("")) c.setName("Coalition " + this.size());
-
+        c.setKey(this.size());
         this.put(this.size(), c);
     }
 
+    public void printCoalitions(){
+        for(int i = 0; i < this.size(); i++){
+            System.out.println(this.get(i).getName());
+        }
+    }
+    public void renameCoalition(Coalition c, String name){
+        this.getCoalition(c.getKey()).setName(name);
+    }
     public Coalition getCoalition(int key){
         return this.get(key);
     }
@@ -35,10 +44,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return false;
     }
 
-    public void removeCoalition(Coalition c){
-        this.remove(c);
-    }
-
     public Coalition getCoalition(String name){
         for (int i = 0; i < this.size(); i++){
             Coalition c = this.get(i);
@@ -47,6 +52,17 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         Coalition d = new Coalition(name);
         this.addCoalition(d);
         return d;
+    }
+    public void removeCoalition(Integer key){
+        System.out.println("Key: " + key);
+        this.remove(key);
+        for(int i = key+1; i < this.size()+1; i++){
+            Coalition d = this.get(i);
+            remove(i);
+            d.setKey(i-1);
+            put(i-1, d);
+        }
+        printCoalitions();
     }
 
     public Coalition getPlayersCoalition(Player p) throws PlayerNotFoundException {

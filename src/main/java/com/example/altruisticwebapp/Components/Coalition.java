@@ -5,6 +5,7 @@ import java.util.HashSet;
 public class Coalition extends HashSet<Player> {
 
     private String name;
+    private int key;
 
     public Coalition (){
         this.name = "";
@@ -16,9 +17,12 @@ public class Coalition extends HashSet<Player> {
     public void setName(String name){
         this.name = name;
     }
-
-
-
+    public void setKey(int key){
+        this.key = key;
+    }
+    public int getKey(){
+        return this.key;
+    }
 
     public void addPlayerSet(PlayerSet ps){
         for (int i = 0; i < ps.size(); i++){

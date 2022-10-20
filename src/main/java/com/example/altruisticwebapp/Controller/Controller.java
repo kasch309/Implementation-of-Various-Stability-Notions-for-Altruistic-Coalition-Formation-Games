@@ -23,7 +23,7 @@ public class Controller {
 
     public Controller() {
         cs = new CoalitionStructure();
-        g = new Game(0);
+        g = new Game(5);
     }
 
     @GetMapping("/")
@@ -75,9 +75,6 @@ public class Controller {
     @PostMapping("/addPlayerToCoalition")
     public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") int coal)
             throws NoPlayerSetAssignedException, PlayerNotFoundException {
-
-        System.out.println(g.getPlayer(key));
-        System.out.println(coal);
         cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
         cs.getCoalition(coal).add(g.getPlayer(key));
         return re;
@@ -85,15 +82,21 @@ public class Controller {
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
     public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") Coalition c) {
-        cs.remove(c);
+        System.out.println("Name: " + c.getName() + "; Key: " + c.getKey());
+        cs.removeCoalition(c.getKey());
+        cs.printCoalitions();
         return re;
     }
 
     @PostMapping("/renamePlayer")
     public String renamePlayer(@RequestParam("renamePlayer") Integer i, @RequestParam("newPlayerName") String name) throws NoPlayerSetAssignedException {
         g.renamePlayer(i, name);
-        System.out.println(g.getPlayer(i).getName());
-        g.getPlayers().printPlayers();
+        return re;
+    }
+
+    @PostMapping("/renameCoalition")
+    public String renameCoalition(@RequestParam("renameCoalition") Coalition c, @RequestParam("newCoalitionName") String name){
+        cs.renameCoalition(c, name);
         return re;
     }
 }

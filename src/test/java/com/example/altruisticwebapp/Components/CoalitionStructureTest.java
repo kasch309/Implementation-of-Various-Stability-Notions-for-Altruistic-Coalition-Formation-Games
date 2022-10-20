@@ -95,4 +95,23 @@ class CoalitionStructureTest {
         cs.addCoalition("k");
         assertEquals(2, cs.size());
     }
+
+    @Test
+    void removeCoalition() {
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition a = new Coalition();
+        Coalition b = new Coalition();
+        Coalition c = new Coalition();
+        cs.addCoalition(a);
+        assertEquals(0, a.getKey());
+        cs.addCoalition(b);
+        assertEquals(1, b.getKey());
+        cs.addCoalition(c);
+        assertEquals(2, c.getKey());
+        cs.removeCoalition(1);
+        assertEquals(1, c.getKey());
+        assertTrue(cs.containsKey(1));
+        assertEquals(c, cs.get(1));
+
+    }
 }
