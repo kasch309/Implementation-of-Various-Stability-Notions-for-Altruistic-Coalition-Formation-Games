@@ -89,4 +89,11 @@ public class Controller {
         return re;
     }
 
+    @PostMapping("/renamePlayer")
+    public String renamePlayer(@RequestParam("renamePlayer") Integer i, @RequestParam("newPlayerName") String name) throws NoPlayerSetAssignedException {
+        g.renamePlayer(i, name);
+        System.out.println(g.getPlayer(i).getName());
+        g.getPlayers().printPlayers();
+        return re;
+    }
 }

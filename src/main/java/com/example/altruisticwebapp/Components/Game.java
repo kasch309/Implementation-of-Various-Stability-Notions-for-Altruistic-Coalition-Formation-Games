@@ -26,6 +26,11 @@ public class Game {
     public void removePlayer(Player p){
         ps.removePlayer(p, nw);
     }
+
+    public void renamePlayer(Integer i, String name) throws NoPlayerSetAssignedException {
+        this.getPlayer(i).setName(name);
+    }
+
     public NetworkOfFriends getNetwork() throws NoNetworkAssignedException {
         if (this.nw == null) throw new NoNetworkAssignedException();
         return nw;
