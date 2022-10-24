@@ -46,6 +46,27 @@
             integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
             crossorigin="anonymous"
         ></script>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto" style="margin-left: 1rem">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/" style="font-weight: 600; color: lightskyblue">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/construction">Construction</a>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+
         <div class="container" style="margin-top: 2rem">
             <div class="row">
                 <div class="col-md-4">
@@ -326,7 +347,6 @@
                                 if(colorcount == colors.length) colorcount=0;
                                 colorcount++;
                                 nodes.push({id: theList[i].name,marker: {radius: 20}, color: colors[colorcount] })
-
                             }
                             for(let i in friendNetwork.matrix){
                                 for(let j= 0; j<friendNetwork.matrix[i].length; j++){
@@ -336,25 +356,20 @@
                                 }
                             }
                             console.log(friendNetwork)
-
-
                             /*]]>*/
                             Highcharts.chart("container", {
                                 chart: {
                                     type: "networkgraph",
                                     marginTop: 40,
                                 },
-
                                 title: {
                                     text: "Network of friendships",
                                 },
-
                                 tooltip: {
                                     formatter: function () {
                                         return "<b>" + this.key + "</b> ";
                                     },
                                 },
-
                                 plotOptions: {
                                     networkgraph: {
                                         keys: ["from", "to"],
@@ -365,7 +380,6 @@
                                         },
                                     },
                                 },
-
                                 series: [
                                     {
                                         marker: {
@@ -396,6 +410,7 @@
                                         width: 30rem;
                                     "
                         >
+                            Change relationship:
                             <select
                                     class="form-select"
                                     style="width: 10rem"
@@ -407,7 +422,7 @@
                                         th:value="${element.value.getKey()}"
                                 ></option>
                             </select>
-                            <span>befriends</span>
+                            <span style="margin-left: 10px; margin-right: 10px">and</span>
                             <select
                                     class="form-select"
                                     style="width: 10rem"
@@ -422,6 +437,7 @@
                             <button
                                     class="btn btn-outline-secondary"
                                     type="submit"
+                                    style="margin-left: 10px"
                             >
                                 <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -441,6 +457,18 @@
                                 </svg>
                             </button>
                         </div>
+                    </form>
+                </div>
+                <div>
+                    <form th:action="@{/analysis}">
+                        <button class="btn btn-primary" type="submit" style="bottom: 2rem; right: 5rem; position: fixed">
+                            Analysis
+                        </button>
+                    </form>
+                    <form th:action="@{/construction}">
+                        <button class="btn btn-primary" type="submit" style="bottom: 2rem; right: 13rem; position: fixed">
+                            Construction
+                        </button>
                     </form>
                 </div>
             </div>

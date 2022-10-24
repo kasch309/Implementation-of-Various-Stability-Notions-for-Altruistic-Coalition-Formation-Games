@@ -26,7 +26,23 @@ public class Controller {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
-        return "hello";
+        return "home";
+    }
+
+    @GetMapping("/analysis")
+    public String analysis(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
+        model.addAttribute("player_set", g.getPlayers());
+        model.addAttribute("coalition_structure", cs);
+        model.addAttribute("friendMatrix", g.getNetwork());
+        return "analysis";
+    }
+
+    @GetMapping("/construction")
+    public String construction(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
+        model.addAttribute("player_set", g.getPlayers());
+        model.addAttribute("coalition_structure", cs);
+        model.addAttribute("friendMatrix", g.getNetwork());
+        return "construction";
     }
 
 
