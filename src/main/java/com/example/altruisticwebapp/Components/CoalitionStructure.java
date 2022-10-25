@@ -12,47 +12,15 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
     public CoalitionStructure(){
     }
-
-    public void addCoalition(String name){
-        if (name.equals("")) name = "Coalition " + this.size();
-        Coalition c = new Coalition(name);
-        c.setKey(this.size());
-        this.put(this.size(), c);
-    }
     public void addCoalition(Coalition c){
-        if (c.getName().equals("")) c.setName("Coalition " + this.size());
         c.setKey(this.size());
         this.put(this.size(), c);
     }
 
-    public void printCoalitions(){
-        for(int i = 0; i < this.size(); i++){
-            System.out.println(this.get(i).getName());
-        }
-    }
-    public void renameCoalition(Coalition c, String name){
-        this.getCoalition(c.getKey()).setName(name);
-    }
     public Coalition getCoalition(int key){
         return this.get(key);
     }
-    public boolean containsName(String name){
-        for (int i = 0; i < this.size(); i++){
-            Coalition c = this.get(i);
-            if (c.getName().equals(name)) return true;
-        }
-        return false;
-    }
 
-    public Coalition getCoalition(String name){
-        for (int i = 0; i < this.size(); i++){
-            Coalition c = this.get(i);
-            if (c.getName().equals(name)) return c;
-        }
-        Coalition d = new Coalition(name);
-        this.addCoalition(d);
-        return d;
-    }
     public void removeCoalition(Integer key){
         System.out.println("Key: " + key);
         for (Player p : this.get(key)){
@@ -70,7 +38,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             d.setKey(i-1);
             put(i-1, d);
         }
-        printCoalitions();
     }
 
     public Coalition getPlayersCoalition(Player p) throws PlayerNotFoundException {
@@ -243,6 +210,43 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             }
         }
         return true;
+    }
+    public boolean [] checkAll(Game g, CoalitionStructure cmp) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
+        boolean [] results = new boolean[9];
+        boolean indivRational, nashStable, indivStable, contIndivStable, strictPop, pop, coreStable, strictCoreStable, perf;
+        //indivRational; nashStable; indivStable; contIndivStable; strictPop; pop; coreStable; strictCoreStable; perf
+        if (this.perfect(g)) {
+            perf = true;
+            pop = true;
+            nashStable = true;
+            indivStable = true;
+            indivRational = true;
+            strictCoreStable = true;
+            coreStable = true;
+        }
+        if (this.strictlyPopular(g, cmp)){
+            strictPop = true;
+            pop = true;
+        }
+        if (this.strictlyCoreStable(g)){
+            strictCoreStable = true;
+            coreStable = true;
+            indivRational = true;
+        }
+        if (this.nashStable(g)){
+            nashStable = true;
+            indivStable = true;
+            indivRational = true;
+        }
+        if (this.coreStable(g)){
+            coreStable = true;
+            indivRational = true;
+        }
+        if (this.individuallyStable(g)){
+            indivStable = true;
+            indivRational = true;
+        }
+
     }
 
 

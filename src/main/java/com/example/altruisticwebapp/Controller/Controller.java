@@ -61,14 +61,14 @@ public class Controller {
     }
 
     @PostMapping("/addCoalition")
-    public String addCoalition(@RequestParam("coalitionInput") String coalitionId) throws NoPlayerSetAssignedException {
+    public String addCoalition() throws NoPlayerSetAssignedException {
         if (cs.isEmpty()) {
-            Coalition init = new Coalition(coalitionId);
+            Coalition init = new Coalition("Coalition 0");
             init.addPlayerSet(g.getPlayers());
             cs.addCoalition(init);
             return re;
         }
-        cs.addCoalition(new Coalition(coalitionId));
+        cs.addCoalition(new Coalition("Coalition " + cs.size()));
         return re;
     }
 
@@ -99,17 +99,11 @@ public class Controller {
         return re;
     }
 
-    @PostMapping("/renameCoalition")
-    public String renameCoalition(@RequestParam("renameCoalition") int key, @RequestParam("newCoalitionName") String name){
-        cs.renameCoalition(cs.getCoalition(key), name);
-        return re;
-    }
     @PostMapping("/removeCoalitionFromCoalitionStructure")
     public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") int key) {
         System.out.println("Arg: " + key);
         System.out.println("Name: " + cs.get(key).getName() + "; Key: " + cs.get(key).getKey());
         cs.removeCoalition(key);
-        cs.printCoalitions();
         return re;
     }
 

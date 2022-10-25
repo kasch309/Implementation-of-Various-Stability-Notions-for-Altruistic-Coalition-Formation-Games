@@ -47,7 +47,15 @@
         crossorigin="anonymous"
 ></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+    >
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -57,22 +65,110 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/analysis" style="font-weight: 600 ;color: lightskyblue">Analysis</a>
+                <a
+                        class="nav-link"
+                        href="/analysis"
+                        style="font-weight: 600; color: lightskyblue"
+                >Analysis</a
+                >
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/construction">Construction</a>
+                <a class="nav-link" href="/construction"
+                >Construction</a
+                >
             </li>
         </ul>
-
     </div>
 </nav>
-    Analysis
-    <div style="margin-left: 5rem">
-        <form th:action="@{/}">
-            <button class="btn btn-primary" type="submit" style="bottom: 2rem; position: fixed">
-                Back
-            </button>
-        </form>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div
+                    class="list"
+                    style="
+                            background-color: lightgray;
+                            margin-top: 2rem;
+                            border-radius: 0.1rem;
+                        "
+            >
+                a
+            </div>
+        </div>
+
+        <div class="col-8">
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/highcharts-more.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+            <div
+                    id="container"
+                    style="
+                            border-radius: 1rem;
+                            border: solid 3px gray;
+                            height: 40rem;
+                        "
+            >
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var coalitions = [[${coalition_structure}]];
+
+                    console.log(coalitions)
+                    let series = [];
+                    for(let i in coalitions){
+                        series.push({name: "Coalition " + i, data: coalitions[i].map(player => {return {name: player.name, value: 1}})});
+
+                    }
+
+                    /*]]>*/
+                    Highcharts.chart("container", {
+                        chart: {
+                            type: "packedbubble",
+
+                        },
+                        title: {
+                            text: "Coalitions",
+                        },
+                        tooltip: {
+                            useHTML: true,
+                            pointFormat:
+                                "<b>{point.name}</b>",
+                        },
+                        plotOptions: {
+                            packedbubble: {
+                                minSize: "20%",
+                                maxSize: "100%",
+                                zMin: 0,
+                                zMax: 1000,
+                                layoutAlgorithm: {
+                                    gravitationalConstant: 0.05,
+                                    splitSeries: true,
+                                    seriesInteraction: false,
+                                    dragBetweenSeries: true,
+                                    parentNodeLimit: true,
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: "{point.name}",
+                                    filter: {
+                                        property: "y",
+                                        operator: ">",
+                                        value: 250,
+                                    },
+                                    style: {
+                                        color: "black",
+                                        textOutline: "none",
+                                        fontWeight: "normal",
+                                    },
+                                },
+                            },
+                        },
+                        series: series,
+
+                    });
+                </script>
+            </div>
+        </div>
     </div>
+</div>
 </body>
 </html>
