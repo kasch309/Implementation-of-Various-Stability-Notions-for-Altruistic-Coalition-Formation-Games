@@ -59,7 +59,8 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         for (int i = 0; i < this.size(); i++){
             Coalition c = this.get(i);
             for (int j = 0; j < g.getSize(); j++){
-                if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(j)), g.getNetwork())) blockers.add(c);
+                if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(j)), g.getNetwork()))
+                    blockers.add(c);
             }
         }
         return blockers;
@@ -79,9 +80,8 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             for (int j = 0; j < g.getSize(); j++){
                 if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(j)), g.getNetwork())) {
                     for (int k = 0; k < g.getSize(); k++){
-                        if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(k)), g.getNetwork())){
+                        if (g.getPlayer(j).weaklyPrefers(c, getPlayersCoalition(g.getPlayer(k)), g.getNetwork()))
                             weakBlockers.add(c);
-                        }
                     }
                 }
             }
@@ -171,22 +171,30 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return true;
     }
 
-    public boolean strictlyPopular(Game g, CoalitionStructure cmp) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean strictlyPopular(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
         int countThis = 0;
         int countCmp = 0;
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         for (int i = 0; i < g.getSize(); i++){
-            if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cmp.getPlayersCoalition(g.getPlayer(i)), g.getNetwork())) countThis++;
-            else countCmp++;
+            for (CoalitionStructure cs : all){
+                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork())) countThis++;
+                else countCmp++;
+            }
+
         }
         return countThis > countCmp;
     }
 
-    public boolean popular(Game g, CoalitionStructure cmp) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean popular(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
         int countThis = 0;
         int countCmp = 0;
-        for (int i = 0; i < g.getSize(); i++){
-            if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cmp.getPlayersCoalition(g.getPlayer(i)), g.getNetwork())) countThis++;
-            else countCmp++;
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
+        for (int i = 0; i < g.getSize(); i++) {
+            for (CoalitionStructure cs : all){
+                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork()))
+                    countThis++;
+                else countCmp++;
+            }
         }
         return countThis >= countCmp;
     }
@@ -211,45 +219,4 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         }
         return true;
     }
-    public boolean [] checkAll(Game g, CoalitionStructure cmp) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
-        boolean [] results = new boolean[9];
-        boolean indivRational, nashStable, indivStable, contIndivStable, strictPop, pop, coreStable, strictCoreStable, perf;
-        //indivRational; nashStable; indivStable; contIndivStable; strictPop; pop; coreStable; strictCoreStable; perf
-        if (this.perfect(g)) {
-            perf = true;
-            pop = true;
-            nashStable = true;
-            indivStable = true;
-            indivRational = true;
-            strictCoreStable = true;
-            coreStable = true;
-        }
-        if (this.strictlyPopular(g, cmp)){
-            strictPop = true;
-            pop = true;
-        }
-        if (this.strictlyCoreStable(g)){
-            strictCoreStable = true;
-            coreStable = true;
-            indivRational = true;
-        }
-        if (this.nashStable(g)){
-            nashStable = true;
-            indivStable = true;
-            indivRational = true;
-        }
-        if (this.coreStable(g)){
-            coreStable = true;
-            indivRational = true;
-        }
-        if (this.individuallyStable(g)){
-            indivStable = true;
-            indivRational = true;
-        }
-
-    }
-
-
-
-
 }

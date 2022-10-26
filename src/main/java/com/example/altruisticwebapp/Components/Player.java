@@ -136,4 +136,34 @@ public class Player {
         }
         else throw new InvalidLevelOfAltruismException();
     }
+
+    public boolean prefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException {
+        if (loa == LOA.SFavg){
+            double utilityA = utilitySFavg(a, nw);
+            double utilityB = utilitySFavg(b, nw);
+            return utilityA > utilityB;
+        }
+        else if (loa == LOA.ETavg){
+            return utilityETavg(a, nw) >= utilityETavg(a, nw);
+        }
+        else if (loa == LOA.ATavg){
+            double utilityA = utilityATavg(a, nw);
+            double utilityB = utilityATavg(b, nw);
+            return utilityA > utilityB;
+        }
+        else if(loa == LOA.SFmin){
+            double utilityA = utilitySFmin(a, nw);
+            double utilityB = utilitySFmin(b, nw);
+            return utilityA > utilityB;
+        }
+        else if(loa == LOA.ETmin){
+            return utilityETmin(a, nw) >= utilityETmin(a, nw);
+        }
+        else if(loa == LOA.ATmin){
+            double utilityA = utilityATmin(a, nw);
+            double utilityB = utilityATmin(b, nw);
+            return utilityA > utilityB;
+        }
+        else throw new InvalidLevelOfAltruismException();
+    }
 }

@@ -17,15 +17,16 @@
             font-size: 1.2rem;
             font-weight: 600;
         }
-        .listContainer {
+        .list {
             padding: 1rem;
-            border-radius: 0.5rem;
-            border: solid 2px gray;
+            border: solid 3px gray;
+            border-radius: 1rem;
             margin-bottom: 2rem;
+            margin-top: 2rem;
             position: relative;
-            max-height: 12rem;
+            height: 36rem;
+            max-height: 36rem;
             overflow-y: scroll;
-            background: lightgray;
         }
     </style>
     <title>AHG</title>
@@ -65,12 +66,9 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a
-                        class="nav-link"
-                        href="/analysis"
-                        style="font-weight: 600; color: lightskyblue"
-                >Analysis</a
-                >
+                <a class="nav-link"
+                    href="/analysis"
+                    style="font-weight: 600; color: lightskyblue">Analysis</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/construction"
@@ -83,17 +81,187 @@
 <div class="container">
     <div class="row">
         <div class="col-4">
-            <div
-                    class="list"
-                    style="
-                            background-color: lightgray;
-                            margin-top: 2rem;
-                            border-radius: 0.1rem;
-                        "
-            >
-                a
+            <div class="list" >
+                <h5>Level of altruism</h5>
+                <form
+                    th:action="@{/analysis/check}" method="post"
+                >
+                    <div class="btn-group">
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                name="btnradio"
+                                id="btnradio1"
+                                autocomplete="off"
+                                checked
+                                th:name="avgBases"
+                                th:th:checked="true"
+                        />
+                        <label class="btn btn-outline-primary" for="btnradio1"
+                        >Average</label>
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                name="btnradio"
+                                id="btnradio2"
+                                autocomplete="off"
+                                th:name="minBased"
+                                th:th:checked="true"
+                        />
+                        <label class="btn btn-outline-primary" for="btnradio2"
+                        >Minimum</label
+                        >
+                    </div>
+                    <br />
+                    <div
+                            class="btn-group"
+                            role="group"
+                            aria-label="Basic radio toggle button group"
+                            style="margin-top: 1rem"
+                    >
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                name="btnradio2"
+                                id="btnradio3"
+                                autocomplete="off"
+                                checked
+                        />
+                        <label
+                                style="width: 6rem"
+                                class="btn btn-outline-primary"
+                                for="btnradio3"
+                        >Selfish First</label>
+
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                name="btnradio2"
+                                id="btnradio4"
+                                autocomplete="off"
+                                th:name="SF"
+                                th:value="SF"
+                        />
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio4"
+                                style="width: 6rem"
+                        >Equal Treatment</label
+                        >
+
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                name="btnradio2"
+                                id="btnradio5"
+                                autocomplete="off"
+                                th:name="ET"
+                                th:value="ET"
+                        />
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio5"
+                                style="width: 6rem"
+                        >Altruistic Treatment</label
+                        >
+                    </div>
+                    <label style="display: flex; align-items: center; margin-top: 1rem">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="individuallyRational"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Individually Rational</span>
+                        <input type="hidden" >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="nashStable"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Nash Stable</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="individuallyStable"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Individually Stable</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="contractuallyIndividuallyStable"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Contractually Individually Stable</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="coreStable"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Core Stable</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="strictlyCoreStable"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Strictly Core Stable</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="popular"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Popular</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="strictlyPopular"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Strictly Popular</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="perfect"
+                                th:checked="true"
+                        />
+                        <span style="margin-left: 0.2rem">Perfect</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary">Evaluate</button>
+                </form>
             </div>
         </div>
+
 
         <div class="col-8">
             <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -105,7 +273,8 @@
                     style="
                             border-radius: 1rem;
                             border: solid 3px gray;
-                            height: 40rem;
+                            height: 36rem;
+                            margin-top: 2rem;
                         "
             >
                 <script type="text/javascript" th:inline="javascript">
@@ -115,7 +284,7 @@
                     console.log(coalitions)
                     let series = [];
                     for(let i in coalitions){
-                        series.push({name: "Coalition " + i, data: coalitions[i].map(player => {return {name: player.name, value: 1}})});
+                        series.push({name: "Coalition " + i, data: coalitions[i].map(player => {return {name: player.name, value: 1,  color: "hsl(50%,100%,50%)"}}), color: "hsl("+i*20+", 50%, 60%)"});
 
                     }
 
@@ -169,6 +338,6 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 </body>
 </html>

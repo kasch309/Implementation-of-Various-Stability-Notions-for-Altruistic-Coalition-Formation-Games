@@ -56,7 +56,24 @@ class CoalitionStructureTest {
     }
 
     @Test
-    void nashStable() {
+    void nashStable() throws NoNetworkAssignedException, NoPlayerSetAssignedException, PlayerNotFoundException {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(2, 3);
+        g.getNetwork().addFriendship(3, 4);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c1 = new Coalition();
+        c1.add(g.getPlayer(0));
+        c1.add(g.getPlayer(1));
+        Coalition c2 = new Coalition();
+        c2.add((g.getPlayer(2)));
+        c2.add(g.getPlayer(3));
+        c2.add(g.getPlayer(4));
+        Coalition c3 = new Coalition();
+        cs.addCoalition(c1);
+        cs.addCoalition(c2);
+        cs.addCoalition(c3);
+        assertTrue(cs.nashStable(g));
     }
 
     @Test
@@ -90,9 +107,9 @@ class CoalitionStructureTest {
     @Test
     void addCoalition() {
         CoalitionStructure cs = new CoalitionStructure();
-        cs.addCoalition("test1");
+        cs.addCoalition(new Coalition());
         assertEquals(1, cs.size());
-        cs.addCoalition("k");
+        cs.addCoalition(new Coalition());
         assertEquals(2, cs.size());
     }
 
@@ -112,6 +129,5 @@ class CoalitionStructureTest {
         assertEquals(1, c.getKey());
         assertTrue(cs.containsKey(1));
         assertEquals(c, cs.get(1));
-
     }
 }

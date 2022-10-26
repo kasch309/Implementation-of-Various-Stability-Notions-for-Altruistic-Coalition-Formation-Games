@@ -15,6 +15,7 @@ public class Controller {
     Game g;
     CoalitionStructure cs;
     String re = "redirect:";
+    Result res;
 
     public Controller() {
         cs = new CoalitionStructure();
@@ -27,14 +28,6 @@ public class Controller {
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
         return "home";
-    }
-
-    @GetMapping("/analysis")
-    public String analysis(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
-        model.addAttribute("player_set", g.getPlayers());
-        model.addAttribute("coalition_structure", cs);
-        model.addAttribute("friendMatrix", g.getNetwork());
-        return "analysis";
     }
 
     @GetMapping("/construction")
@@ -101,8 +94,6 @@ public class Controller {
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
     public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") int key) {
-        System.out.println("Arg: " + key);
-        System.out.println("Name: " + cs.get(key).getName() + "; Key: " + cs.get(key).getKey());
         cs.removeCoalition(key);
         return re;
     }
@@ -113,4 +104,93 @@ public class Controller {
         else g.getNetwork().addFriendship(key1, key2);
         return re;
     }
+
+    @GetMapping("/analysis")
+    public String analysis(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+        model.addAttribute("player_set", g.getPlayers());
+        model.addAttribute("coalition_structure", cs);
+        model.addAttribute("friendMatrix", g.getNetwork());
+        model.addAttribute("blocking_coalitions", cs.blockingCoalitions(g));
+        model.addAttribute("weakly_blocking_coalitions", cs.weaklyBlockingCoalitions(g));
+        model.addAttribute("result", res);
+        return "analysis";
+    }
+
+    @PostMapping("/analysis/check")
+    public String calculateStabilityConcepts(@RequestParam("individuallyRational") boolean individuallyRational,
+                                             @RequestParam("nashStable") boolean nashStable,
+                                             @RequestParam("individuallyStable") boolean individuallyStable,
+                                             @RequestParam("contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
+                                             @RequestParam("strictlyPopular") boolean strictlyPopular,
+                                             @RequestParam("popular") boolean popular,
+                                             @RequestParam("coreStable") boolean coreStable,
+                                             @RequestParam("strictlyCoreStable") boolean strictlyCoreStable,
+                                             @RequestParam("perfect") boolean perfect) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
+        res = new Result();
+        if (perfect && !res.perfect){
+            if (cs.perfect(g)){
+                res.perfect = true;
+                res.strictlyPopular = true;
+                res.popular = true;
+                res.strictlyCoreStable = true;
+                res.nashStable = true;
+                res.individuallyStable = true;
+                res.contractuallyIndividuallyStable = true;
+                res.individuallyRational = true;
+                res.coreStable = true;
+            }
+        }
+        if (strictlyPopular && !res.strictlyPopular){
+            if (cs.strictlyPopular(g)){
+                res.strictlyPopular = true;
+                res.popular = true;
+                res.contractuallyIndividuallyStable = true;
+            }
+        }
+        if (popular && !res.popular){
+            if (cs.popular(g)){
+                res.popular = true;
+                res.contractuallyIndividuallyStable = true;
+            }
+        }
+        if (strictlyCoreStable && !res.strictlyCoreStable){
+            if (cs.strictlyCoreStable(g)){
+                res.strictlyCoreStable = true;
+                res.contractuallyIndividuallyStable = true;
+                res.individuallyStable = true;
+                res.individuallyRational = true;
+                res.coreStable = true;
+            }
+        }
+        if (nashStable && !res.nashStable){
+            if (cs.nashStable(g)){
+                res.nashStable = true;
+                res.individuallyStable = true;
+                res.contractuallyIndividuallyStable = true;
+                res.individuallyRational = true;
+            }
+        }
+        if (individuallyStable && !res.individuallyStable){
+            if (cs.individuallyStable(g)){
+                res.individuallyStable = true;
+                res.contractuallyIndividuallyStable = true;
+                res.individuallyRational = true;
+            }
+        }
+        if (coreStable && !res.coreStable){
+            if (cs.coreStable(g)){
+                res.coreStable = true;
+                res.individuallyRational = true;
+            }
+        }
+        if (contractuallyIndividuallyStable && !res.contractuallyIndividuallyStable){
+            res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g);
+        }
+        if (individuallyRational && !res.individuallyRational){
+            res.individuallyRational = cs.individuallyRational(g);
+        }
+
+        return "analysis";
+    }
+
 }
