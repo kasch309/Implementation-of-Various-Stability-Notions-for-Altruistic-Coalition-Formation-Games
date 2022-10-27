@@ -1,6 +1,7 @@
 package com.example.altruisticwebapp.Controller;
 
 import com.example.altruisticwebapp.Components.*;
+import com.example.altruisticwebapp.Exceptions.InvalidLevelOfAltruismException;
 import com.example.altruisticwebapp.Exceptions.NoNetworkAssignedException;
 import com.example.altruisticwebapp.Exceptions.NoPlayerSetAssignedException;
 import com.example.altruisticwebapp.Exceptions.PlayerNotFoundException;
@@ -8,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.HashSet;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -110,25 +113,41 @@ public class Controller {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
-        model.addAttribute("blocking_coalitions", cs.blockingCoalitions(g));
-        model.addAttribute("weakly_blocking_coalitions", cs.weaklyBlockingCoalitions(g));
+        model.addAttribute("blocking_coalitions", new HashSet<Coalition>());
+        model.addAttribute("weakly_blocking_coalitions", new HashSet<Coalition>());
         model.addAttribute("result", res);
         return "analysis";
     }
 
     @PostMapping("/analysis/check")
-    public String calculateStabilityConcepts(@RequestParam("individuallyRational") boolean individuallyRational,
-                                             @RequestParam("nashStable") boolean nashStable,
-                                             @RequestParam("individuallyStable") boolean individuallyStable,
-                                             @RequestParam("contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
-                                             @RequestParam("strictlyPopular") boolean strictlyPopular,
-                                             @RequestParam("popular") boolean popular,
-                                             @RequestParam("coreStable") boolean coreStable,
-                                             @RequestParam("strictlyCoreStable") boolean strictlyCoreStable,
-                                             @RequestParam("perfect") boolean perfect) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
+    public String calculateStabilityConcepts(
+            @RequestParam("valueBase") String valueBase,
+            @RequestParam("treatment") String treatment,
+            @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
+            @RequestParam(required = false, value = "nashStable") boolean nashStable,
+            @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
+            @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
+            @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
+            @RequestParam(required = false, value = "popular") boolean popular,
+            @RequestParam(required = false, value = "coreStable") boolean coreStable,
+            @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
+            @RequestParam(required = false, value = "perfect") boolean perfect)
+            throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
         res = new Result();
-        if (perfect && !res.perfect){
-            if (cs.perfect(g)){
+        g.getPlayers().printPlayers();
+        for (int i = 0; i < g.getSize(); i++){
+            System.out.println(g.getPlayer(i).getKey());
+        }
+        LOA loa = LOA.stringToEnum(valueBase, treatment);
+
+        /*
+         * levelOfAltruism is returned as either "average" or "minimum"
+         * treatment is returned as either "selfish_first","equal_treatment" or
+         * "altruistic_treatment"
+         */
+
+        if (perfect && !res.perfect) {
+            if (cs.perfect(g, loa)) {
                 res.perfect = true;
                 res.strictlyPopular = true;
                 res.popular = true;
@@ -140,21 +159,21 @@ public class Controller {
                 res.coreStable = true;
             }
         }
-        if (strictlyPopular && !res.strictlyPopular){
-            if (cs.strictlyPopular(g)){
+        if (strictlyPopular && !res.strictlyPopular) {
+            if (cs.strictlyPopular(g, loa)) {
                 res.strictlyPopular = true;
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
             }
         }
-        if (popular && !res.popular){
-            if (cs.popular(g)){
+        if (popular && !res.popular) {
+            if (cs.popular(g, loa)) {
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
             }
         }
-        if (strictlyCoreStable && !res.strictlyCoreStable){
-            if (cs.strictlyCoreStable(g)){
+        if (strictlyCoreStable && !res.strictlyCoreStable) {
+            if (cs.strictlyCoreStable(g, loa)) {
                 res.strictlyCoreStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyStable = true;
@@ -162,35 +181,35 @@ public class Controller {
                 res.coreStable = true;
             }
         }
-        if (nashStable && !res.nashStable){
-            if (cs.nashStable(g)){
+        if (nashStable && !res.nashStable) {
+            if (cs.nashStable(g, loa)) {
                 res.nashStable = true;
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
             }
         }
-        if (individuallyStable && !res.individuallyStable){
-            if (cs.individuallyStable(g)){
+        if (individuallyStable && !res.individuallyStable) {
+            if (cs.individuallyStable(g, loa)) {
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
             }
         }
-        if (coreStable && !res.coreStable){
-            if (cs.coreStable(g)){
+        if (coreStable && !res.coreStable) {
+            if (cs.coreStable(g, loa)) {
                 res.coreStable = true;
                 res.individuallyRational = true;
             }
         }
-        if (contractuallyIndividuallyStable && !res.contractuallyIndividuallyStable){
-            res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g);
+        if (contractuallyIndividuallyStable && !res.contractuallyIndividuallyStable) {
+            res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g, loa);
         }
-        if (individuallyRational && !res.individuallyRational){
-            res.individuallyRational = cs.individuallyRational(g);
+        if (individuallyRational && !res.individuallyRational) {
+            res.individuallyRational = cs.individuallyRational(g, loa);
         }
 
-        return "analysis";
+        return "redirect:/analysis";
     }
 
 }

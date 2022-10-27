@@ -18,7 +18,7 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
 
     public void printPlayers(){
         for (int i = 0; i < size(); i++){
-            System.out.println(get(i).getName());
+            System.out.println(get(i).getName() + ", " + get(i).getKey());
         }
     }
     public void add(Player p, NetworkOfFriends nw) {
@@ -100,13 +100,8 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         for(int i = key+1; i < this.size()+1; i++){
             Player player = get(i);
             remove(i);
-            System.out.println("Old key: " + i);
             player.setKey(i-1);
-            System.out.println("New key: " + player.getKey());
             put(i-1, player);
-        }
-        for (int i = 0; i < this.size(); i++){
-            System.out.println(this.get(i).getKey());
         }
     }
 }

@@ -38,10 +38,10 @@ public class Player {
         return key;
     }
 
-    public boolean acceptable(Coalition c, NetworkOfFriends nw) {
+    public boolean acceptable(Coalition c, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException {
         Coalition onlyPlayer = new Coalition();
         onlyPlayer.add(this);
-        return onlyPlayer.value(this, nw) <= c.value(this, nw);
+        return this.weaklyPrefers(c, onlyPlayer, nw, loa);
     }
 
     public boolean weaklyPrefers(Coalition a, Coalition b, NetworkOfFriends nw) {
@@ -53,7 +53,7 @@ public class Player {
     }
 
     public boolean areFriends(Player p, NetworkOfFriends nw){
-        return (nw.getMatrix()[this.key][p.getKey()] == 1);
+        return (nw.getMatrix()[this.getKey()][p.getKey()] == 1);
     }
 
     public boolean areEnemies(Player p, NetworkOfFriends nw){

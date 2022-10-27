@@ -45,18 +45,18 @@ class CoalitionStructureTest {
     }
 
     @Test
-    void individuallyRational() throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
+    void individuallyRational() throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
         Game g = new Game(20);
         g.getNetwork().addFriendship(0, 1);
         g.getNetwork().addFriendship(2, 3);
         g.getNetwork().addFriendship(3, 4);
         g.getNetwork().addFriendship(16,18);
         CoalitionStructure cs = g.singletons();
-        assertTrue(cs.individuallyRational(g));
+        assertTrue(cs.individuallyRational(g, LOA.ETavg));
     }
 
     @Test
-    void nashStable() throws NoNetworkAssignedException, NoPlayerSetAssignedException, PlayerNotFoundException {
+    void nashStable() throws NoNetworkAssignedException, NoPlayerSetAssignedException, PlayerNotFoundException, InvalidLevelOfAltruismException {
         Game g = new Game(5);
         g.getNetwork().addFriendship(0, 1);
         g.getNetwork().addFriendship(2, 3);
@@ -73,7 +73,7 @@ class CoalitionStructureTest {
         cs.addCoalition(c1);
         cs.addCoalition(c2);
         cs.addCoalition(c3);
-        assertTrue(cs.nashStable(g));
+        assertTrue(cs.nashStable(g, LOA.ETavg));
     }
 
     @Test

@@ -66,9 +66,12 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                    href="/analysis"
-                    style="font-weight: 600; color: lightskyblue">Analysis</a>
+                <a
+                        class="nav-link"
+                        href="/analysis"
+                        style="font-weight: 600; color: lightskyblue"
+                >Analysis</a
+                >
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/construction"
@@ -81,66 +84,70 @@
 <div class="container">
     <div class="row">
         <div class="col-4">
-            <div class="list" >
+            <div class="list">
                 <h5>Level of altruism</h5>
                 <form
-                    th:action="@{/analysis/check}" method="post"
+                        th:if="${!coalition_structure.isEmpty()}"
+                        th:action="@{/analysis/check}"
+                        method="post"
                 >
                     <div class="btn-group">
                         <input
                                 type="radio"
                                 class="btn-check"
-                                name="btnradio"
-                                id="btnradio1"
+                                th:id="btnradio1"
                                 autocomplete="off"
                                 checked
-                                th:name="avgBases"
-                                th:th:checked="true"
+                                th:name="valueBase"
+                                value="average"
                         />
-                        <label class="btn btn-outline-primary" for="btnradio1"
-                        >Average</label>
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio1"
+                        >Average</label
+                        >
                         <input
                                 type="radio"
                                 class="btn-check"
-                                name="btnradio"
-                                id="btnradio2"
+                                th:id="btnradio2"
                                 autocomplete="off"
-                                th:name="minBased"
-                                th:th:checked="true"
+                                th:name="valueBase"
+                                value="minimum"
                         />
-                        <label class="btn btn-outline-primary" for="btnradio2"
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio2"
                         >Minimum</label
                         >
                     </div>
                     <br />
                     <div
                             class="btn-group"
-                            role="group"
                             aria-label="Basic radio toggle button group"
                             style="margin-top: 1rem"
                     >
                         <input
                                 type="radio"
                                 class="btn-check"
-                                name="btnradio2"
+                                th:name="treatment"
                                 id="btnradio3"
                                 autocomplete="off"
+                                value="selfish_first"
                                 checked
                         />
                         <label
                                 style="width: 6rem"
                                 class="btn btn-outline-primary"
                                 for="btnradio3"
-                        >Selfish First</label>
-
+                        >Selfish First</label
+                        >
                         <input
                                 type="radio"
                                 class="btn-check"
-                                name="btnradio2"
+                                th:name="treatment"
                                 id="btnradio4"
                                 autocomplete="off"
-                                th:name="SF"
-                                th:value="SF"
+                                value="equal_treatment"
                         />
                         <label
                                 class="btn btn-outline-primary"
@@ -152,11 +159,10 @@
                         <input
                                 type="radio"
                                 class="btn-check"
-                                name="btnradio2"
+                                th:name="treatment"
                                 id="btnradio5"
                                 autocomplete="off"
-                                th:name="ET"
-                                th:value="ET"
+                                value="altruistic_treatment"
                         />
                         <label
                                 class="btn btn-outline-primary"
@@ -165,16 +171,23 @@
                         >Altruistic Treatment</label
                         >
                     </div>
-                    <label style="display: flex; align-items: center; margin-top: 1rem">
+                    <label
+                            style="
+                                    display: flex;
+                                    align-items: center;
+                                    margin-top: 1rem;
+                                "
+                    >
                         <input
                                 class="form-check-input mt-0"
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="individuallyRational"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Individually Rational</span>
-                        <input type="hidden" >
+                        <span style="margin-left: 0.2rem"
+                        >Individually Rational</span
+                        >
+                        <input type="hidden" />
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -182,9 +195,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="nashStable"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Nash Stable</span>
+                        <span style="margin-left: 0.2rem"
+                        >Nash Stable</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -192,9 +206,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="individuallyStable"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Individually Stable</span>
+                        <span style="margin-left: 0.2rem"
+                        >Individually Stable</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -202,9 +217,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="contractuallyIndividuallyStable"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Contractually Individually Stable</span>
+                        <span style="margin-left: 0.2rem"
+                        >Contractually Individually Stable</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -212,9 +228,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="coreStable"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Core Stable</span>
+                        <span style="margin-left: 0.2rem"
+                        >Core Stable</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -222,10 +239,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="strictlyCoreStable"
-                                th:checked="true"
                         />
                         <span style="margin-left: 0.2rem"
-                        >Strictly Core Stable</span>
+                        >Strictly Core Stable</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -233,7 +250,6 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="popular"
-                                th:checked="true"
                         />
                         <span style="margin-left: 0.2rem">Popular</span>
                     </label>
@@ -243,9 +259,10 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="strictlyPopular"
-                                th:checked="true"
                         />
-                        <span style="margin-left: 0.2rem">Strictly Popular</span>
+                        <span style="margin-left: 0.2rem"
+                        >Strictly Popular</span
+                        >
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -253,15 +270,15 @@
                                 type="checkbox"
                                 aria-label="Checkbox for following text input"
                                 th:name="perfect"
-                                th:checked="true"
                         />
                         <span style="margin-left: 0.2rem">Perfect</span>
                     </label>
-                    <button type="submit" class="btn btn-primary">Evaluate</button>
+                    <button type="submit" class="btn btn-primary">
+                        Evaluate
+                    </button>
                 </form>
             </div>
         </div>
-
 
         <div class="col-8">
             <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -338,6 +355,9 @@
             </div>
         </div>
     </div>
-    </div>
+    <span th:if="${res.individuallyRational}" class="alert alert-success" role="alert">
+        Blockers
+    </span>
+</div>
 </body>
 </html>

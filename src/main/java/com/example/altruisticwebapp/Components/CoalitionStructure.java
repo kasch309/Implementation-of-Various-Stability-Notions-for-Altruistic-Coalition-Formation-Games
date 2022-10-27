@@ -8,8 +8,6 @@ import java.util.HashSet;
 
 public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
-    private String name;
-
     public CoalitionStructure(){
     }
     public void addCoalition(Coalition c){
@@ -22,7 +20,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
 
     public void removeCoalition(Integer key){
-        System.out.println("Key: " + key);
         for (Player p : this.get(key)){
             if (key == 0){
                 this.get(1).add(p);
@@ -40,7 +37,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         }
     }
 
-    public Coalition getPlayersCoalition(Player p) throws PlayerNotFoundException {
+    public Coalition getPlayersCoalition(Player p) {
         for (int i = 0; i < this.size(); i++){
             Coalition c = this.get(i);
             if (c.contains(p)) return c;
@@ -48,55 +45,71 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return null;
     }
 
-    public HashSet<Coalition> blockingCoalitions(Game g) throws PlayerNotFoundException, NoNetworkAssignedException, NoPlayerSetAssignedException {
-
+    public HashSet<Coalition> blockingCoalitions(Game g, LOA loa) throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
         /*
         Coalition C blocks coalition structure T if for each player from C it holds that
         coalition C is preferred to any coalition of which i is part of
         */
 
         HashSet<Coalition> blockers = new HashSet<>();
-        for (int i = 0; i < this.size(); i++){
-            Coalition c = this.get(i);
-            for (int j = 0; j < g.getSize(); j++){
-                if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(j)), g.getNetwork()))
-                    blockers.add(c);
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
+        for (CoalitionStructure cs : all){
+            for (int j = 0; j < cs.size(); j++){
+                boolean blocks = true;
+                for (int i = 0; i < g.getSize(); i++){
+                    if (cs.get(j).contains(g.getPlayer(i))){
+                        if (!g.getPlayer(i).prefers(cs.get(j), this.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
+                            blocks = false;
+                            break;
+                        }
+                    }
+                }
+                if (blocks) blockers.add(cs.get(j));
             }
         }
+
         return blockers;
     }
 
-    public HashSet<Coalition> weaklyBlockingCoalitions(Game g) throws PlayerNotFoundException, NoNetworkAssignedException, NoPlayerSetAssignedException {
-        HashSet<Coalition> weakBlockers = new HashSet<>();
-
+    public HashSet<Coalition> weaklyBlockingCoalitions(Game g, LOA loa) throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
         /*
         Coalition C weakly blocks if there is at least one player who prefers C to any coalition
         that i is part of while another player j weakly prefers C to any coalition of which j
         is part of
         */
 
-        for (int i = 0; i < this.size(); i++){
-            Coalition c = this.get(i);
-            for (int j = 0; j < g.getSize(); j++){
-                if (g.getPlayer(j).prefers(c, getPlayersCoalition(g.getPlayer(j)), g.getNetwork())) {
-                    for (int k = 0; k < g.getSize(); k++){
-                        if (g.getPlayer(j).weaklyPrefers(c, getPlayersCoalition(g.getPlayer(k)), g.getNetwork()))
-                            weakBlockers.add(c);
+        HashSet<Coalition> weakBlockers = new HashSet<>();
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
+        for (CoalitionStructure cs : all){
+            for (int j = 0; j < cs.size(); j++){
+                boolean blocks = false;
+                for (int i = 0; i < g.getSize(); i++){
+                    if (cs.get(j).contains(g.getPlayer(i))){
+                        if (g.getPlayer(i).prefers(cs.get(j), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
+                            blocks = true;
+                            for (int k = 0; k < g.getSize(); k++){
+                                if (!g.getPlayer(k).weaklyPrefers(cs.get(j), this.getPlayersCoalition(g.getPlayer(k)), g.getNetwork(), loa)){
+                                    blocks = false;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
+                if (blocks) weakBlockers.add(cs.get(j));
             }
         }
         return weakBlockers;
     }
 
-    public boolean individuallyRational(Game g) throws PlayerNotFoundException, NoPlayerSetAssignedException, NoNetworkAssignedException {
+    public boolean individuallyRational(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
         for (int i = 0; i < g.getSize(); i++){
-            if (!g.getPlayer(i).acceptable(getPlayersCoalition(g.getPlayer(i)), g.getNetwork())) return false;
+            if (!g.getPlayer(i).acceptable(getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) return false;
         }
         return true;
     }
 
-    public boolean nashStable(Game g) throws PlayerNotFoundException, NoPlayerSetAssignedException, NoNetworkAssignedException {
+    public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
 
         // For all players i their own coalition is weakly preferred to any other, if it would contain i additionally
         Coalition empty = new Coalition();
@@ -106,14 +119,17 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 Coalition c = this.get(j);
                 Coalition d = c.duplicate();
                 d.add(g.getPlayer(i));
-                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork()))
+                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
+                    this.remove(empty);
                     return false;
+                }
             }
         }
+        this.remove(empty);
         return true;
     }
 
-    public boolean individuallyStable(Game g) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
+    public boolean individuallyStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
@@ -121,7 +137,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         */
         Coalition empty = new Coalition();
         this.addCoalition(empty);
-
         for (int i = 0; i < g.getSize(); i++){
             Player p = g.getPlayer(i);
             for (int j = 0; j < this.size(); j++){
@@ -129,17 +144,21 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (this.getPlayersCoalition(p).equals(c)) continue;
                 Coalition dup = c.duplicate();
                 dup.add(p);
-                if (!p.weaklyPrefers(c, dup, g.getNetwork())){
+                if (!p.weaklyPrefers(c, dup, g.getNetwork(), loa)){
                     for(Player q : c){
-                        if(!q.prefers(c, dup, g.getNetwork())) return false;
+                        if(!q.prefers(c, dup, g.getNetwork(), loa)) {
+                            this.remove(empty);
+                            return false;
+                        }
                     }
                 }
             }
         }
+        this.remove(empty);
         return true;
     }
 
-    public boolean contractuallyIndividuallyStable(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean contractuallyIndividuallyStable(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
@@ -149,35 +168,38 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
         Coalition empty = new Coalition();
         this.addCoalition(empty);
-
         for (int i = 0; i < g.getSize(); i++){
             for (int j = 0; j < this.size(); j++){
                 Coalition c = this.get(j);
                 Coalition d = c.duplicate();
                 d.add(g.getPlayer(i));
-                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork())){
+                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
                     for (int k = 0; k < g.getSize(); k++){
-                        if (!g.getPlayer(k).prefers(c, d, g.getNetwork())){
+                        if (!g.getPlayer(k).prefers(c, d, g.getNetwork(), loa)){
                             for (Player p : this.getPlayersCoalition(g.getPlayer(i))){
                                 Coalition e = c.duplicate();
                                 e.remove(g.getPlayer(i));
-                                if (g.getPlayer(j).prefers(c, d, g.getNetwork())) return false;
+                                if (!p.prefers(c, d, g.getNetwork(), loa)) {
+                                    this.remove(empty);
+                                    return false;
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        this.remove(empty);
         return true;
     }
 
-    public boolean strictlyPopular(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean strictlyPopular(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         for (int i = 0; i < g.getSize(); i++){
             for (CoalitionStructure cs : all){
-                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork())) countThis++;
+                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) countThis++;
                 else countCmp++;
             }
 
@@ -185,13 +207,13 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return countThis > countCmp;
     }
 
-    public boolean popular(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean popular(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         for (int i = 0; i < g.getSize(); i++) {
             for (CoalitionStructure cs : all){
-                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork()))
+                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa))
                     countThis++;
                 else countCmp++;
             }
@@ -199,22 +221,22 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return countThis >= countCmp;
     }
 
-    public boolean coreStable(Game g) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
-        return blockingCoalitions(g).isEmpty();
+    public boolean coreStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+        return blockingCoalitions(g, loa).isEmpty();
     }
 
-    public boolean strictlyCoreStable(Game g) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException {
-        return weaklyBlockingCoalitions(g).isEmpty();
+    public boolean strictlyCoreStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+        return weaklyBlockingCoalitions(g, loa).isEmpty();
     }
 
-    public boolean perfect(Game g) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException {
+    public boolean perfect(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
 
         // i prefers own coalition over any other possible one
 
         for (int i = 0; i < g.getSize(); i++){
             for (int j = 0; j < this.size(); j++){
                 Coalition c = this.get(i);
-                if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork())) return false;
+                if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) return false;
             }
         }
         return true;

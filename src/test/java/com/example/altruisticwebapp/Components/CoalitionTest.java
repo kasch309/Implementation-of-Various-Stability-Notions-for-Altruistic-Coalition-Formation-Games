@@ -8,17 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoalitionTest {
 
     @Test
-    void names(){
-        Coalition c = new Coalition();
-        Coalition d = new Coalition();
-        CoalitionStructure cs = new CoalitionStructure();
-        cs.addCoalition(c);
-        cs.addCoalition(d);
-        assertEquals("Coalition 0", c.getName());
-        assertEquals("Coalition 1", d.getName());
-    }
-
-    @Test
     void numberOfFriends() throws NoNetworkAssignedException, NoPlayerSetAssignedException {
         Game g = new Game(6);
         g.getNetwork().addFriendship(0, 1);
