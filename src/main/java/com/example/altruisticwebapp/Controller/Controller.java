@@ -1,10 +1,7 @@
 package com.example.altruisticwebapp.Controller;
 
 import com.example.altruisticwebapp.Components.*;
-import com.example.altruisticwebapp.Exceptions.InvalidLevelOfAltruismException;
-import com.example.altruisticwebapp.Exceptions.NoNetworkAssignedException;
-import com.example.altruisticwebapp.Exceptions.NoPlayerSetAssignedException;
-import com.example.altruisticwebapp.Exceptions.PlayerNotFoundException;
+import com.example.altruisticwebapp.Exceptions.*;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,7 +129,7 @@ public class Controller {
             @RequestParam(required = false, value = "coreStable") boolean coreStable,
             @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
             @RequestParam(required = false, value = "perfect") boolean perfect)
-            throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+            throws Exception {
         res = new Result();
         g.getPlayers().printPlayers();
         for (int i = 0; i < g.getSize(); i++){
@@ -210,6 +207,57 @@ public class Controller {
         }
 
         return "redirect:/analysis";
+    }
+
+    @GetMapping("/construct/build")
+    public String buildCoalitionStructure(@RequestParam("valueBase") String valueBase,
+                                          @RequestParam("treatment") String treatment,
+                                          @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
+                                          @RequestParam(required = false, value = "nashStable") boolean nashStable,
+                                          @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
+                                          @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
+                                          @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
+                                          @RequestParam(required = false, value = "popular") boolean popular,
+                                          @RequestParam(required = false, value = "coreStable") boolean coreStable,
+                                          @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
+                                          @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
+
+        LOA loa = LOA.stringToEnum(valueBase, treatment);
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
+        for (CoalitionStructure csAll : all){
+            System.out.println(csAll.getCoalition(0).getName());
+            if (individuallyRational){
+                if (!csAll.individuallyRational(g, loa)) continue;
+            }
+            if (nashStable){
+                if (!csAll.nashStable(g, loa)) continue;
+            }
+            if (individuallyStable){
+                if (!csAll.individuallyStable(g, loa)) continue;
+            }
+            if (contractuallyIndividuallyStable){
+                if (!csAll.contractuallyIndividuallyStable(g, loa)) continue;
+            }
+            if (strictlyPopular){
+                if (!csAll.strictlyPopular(g, loa)) continue;
+            }
+            if (popular) {
+                if (!csAll.popular(g, loa)) continue;
+            }
+            if (coreStable) {
+                if (!csAll.coreStable(g, loa)) continue;
+            }
+            if (strictlyCoreStable){
+                if(!csAll.strictlyCoreStable(g, loa)) continue;
+            }
+            if (perfect){
+                if (!csAll.perfect(g, loa)) continue;
+            }
+            this.cs = csAll;
+            break;
+        }
+
+        return "redirect:/construct";
     }
 
 }

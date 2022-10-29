@@ -1,83 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta
+<head>
+    <meta
             charset="UTF-8"
             name="viewport"
             content="width=device-width, initial-scale=1"
-        />
-        <link
+    />
+    <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
             rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
             crossorigin="anonymous"
-        />
-        <style>
-            .title {
-                font-size: 1.2rem;
-                font-weight: 600;
-            }
-            .listContainer {
-                padding: 1rem;
-                border-radius: 0.5rem;
-                border: solid 2px gray;
-                margin-bottom: 2rem;
-                position: relative;
-                max-height: 12rem;
-                overflow-y: scroll;
-                background: lightgray;
-            }
-        </style>
-        <title>AHG</title>
-    </head>
-    <body>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-            integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-            integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
-            crossorigin="anonymous"
-        ></script>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto" style="margin-left: 1rem">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/analysis">Analysis</a>
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link"
-                            href="/construction"
-                            style="font-weight: 600; color: lightskyblue"
-                            >Construction</a
+    />
+    <style>
+        .list {
+            padding: 1rem;
+            border: solid 3px gray;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            height: 36rem;
+            max-height: 36rem;
+            overflow-y: scroll;
+        }
+    </style>
+    <title>AHG</title>
+</head>
+<body>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"
+></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"
+></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"
+></script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto" style="margin-left: 1rem">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a
+                        class="nav-link"
+                        href="/analysis"
+                >Analysis</a>
+            </li>
+            <li class="nav-item">
+                <a
+                        class="nav-link"
+                        href="/construction"
+                        style="font-weight: 600; color: lightskyblue"
+                >Construction</a
+                >
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div class="list">
+                <h5>Level of altruism</h5>
+                <form
+                    th:action="@{/analysis/check}"
+                    method="post"
+                >
+                    <div class="btn-group">
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                th:id="btnradio1"
+                                autocomplete="off"
+                                checked
+                                th:name="valueBase"
+                                value="average"
+                        />
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio1"
+                        >Average</label
                         >
-                    </li>
-                </ul>
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                th:id="btnradio2"
+                                autocomplete="off"
+                                th:name="valueBase"
+                                value="minimum"
+                        />
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio2">
+                            Minimum
+                        </label>
+                    </div>
+                    <br/>
+                    <div
+                            class="btn-group"
+                            aria-label="Basic radio toggle button group"
+                            style="margin-top: 1rem"
+                    >
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                th:name="treatment"
+                                id="btnradio3"
+                                autocomplete="off"
+                                value="selfish_first"
+                                checked/>
+                        <label
+                                style="width: 6rem"
+                                class="btn btn-outline-primary"
+                                for="btnradio3"
+                        >Selfish First</label>
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                th:name="treatment"
+                                id="btnradio4"
+                                autocomplete="off"
+                                value="equal_treatment"/>
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio4"
+                                style="width: 6rem">Equal Treatment
+                        </label>
+                        <input
+                                type="radio"
+                                class="btn-check"
+                                th:name="treatment"
+                                id="btnradio5"
+                                autocomplete="off"
+                                value="altruistic_treatment"/>
+                        <label
+                                class="btn btn-outline-primary"
+                                for="btnradio5"
+                                style="width: 6rem">Altruistic Treatment
+                        </label>
+                    </div>
+                    <label
+                            style="
+                                    display: flex;
+                                    align-items: center;
+                                    margin-top: 1rem;
+                                "
+                    >
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="individuallyRational"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Individually Rational</span
+                        >
+                        <input type="hidden"/>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="nashStable"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Nash Stable</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="individuallyStable"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Individually Stable</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="contractuallyIndividuallyStable"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Contractually Individually Stable</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="coreStable"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Core Stable</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="strictlyCoreStable"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Strictly Core Stable</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="popular"
+                        />
+                        <span style="margin-left: 0.2rem">Popular</span>
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="strictlyPopular"
+                        />
+                        <span style="margin-left: 0.2rem"
+                        >Strictly Popular</span
+                        >
+                    </label>
+                    <label style="display: flex; align-items: center">
+                        <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                aria-label="Checkbox for following text input"
+                                th:name="perfect"
+                        />
+                        <span style="margin-left: 0.2rem">Perfect</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary">
+                        Construct
+                    </button>
+                </form>
             </div>
-        </nav>
-        Construction
-    </body>
+        </div>
+
+        <div class="col-8">
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/highcharts-more.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+            <div
+                    id="container"
+                    style="
+                            border-radius: 1rem;
+                            border: solid 3px gray;
+                            height: 36rem;
+                            margin-top: 2rem;
+                        "
+            >
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var coalitions = [[${coalition_structure}]];
+
+                    console.log(coalitions)
+                    let series = [];
+                    for (let i in coalitions) {
+                        series.push({
+                            name: "Coalition " + i, data: coalitions[i].map(player => {
+                                return {name: player.name, value: 1, color: "hsl(50%,100%,50%)"}
+                            }), color: "hsl(" + i * 20 + ", 50%, 60%)"
+                        });
+
+                    }
+
+                    /*]]>*/
+                    Highcharts.chart("container", {
+                        chart: {
+                            type: "packedbubble",
+
+                        },
+                        title: {
+                            text: "Coalitions",
+                        },
+                        tooltip: {
+                            useHTML: true,
+                            pointFormat:
+                                "<b>{point.name}</b>",
+                        },
+                        plotOptions: {
+                            packedbubble: {
+                                minSize: "20%",
+                                maxSize: "100%",
+                                zMin: 0,
+                                zMax: 1000,
+                                layoutAlgorithm: {
+                                    gravitationalConstant: 0.05,
+                                    splitSeries: true,
+                                    seriesInteraction: false,
+                                    dragBetweenSeries: true,
+                                    parentNodeLimit: true,
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: "{point.name}",
+                                    filter: {
+                                        property: "y",
+                                        operator: ">",
+                                        value: 250,
+                                    },
+                                    style: {
+                                        color: "black",
+                                        textOutline: "none",
+                                        fontWeight: "normal",
+                                    },
+                                },
+                            },
+                        },
+                        series: series,
+
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    <span th:if="${res.individuallyRational}" class="alert alert-success" role="alert">
+        Blockers
+    </span>
+</div>
+</body>
 </html>
+

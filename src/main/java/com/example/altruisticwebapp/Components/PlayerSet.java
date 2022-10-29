@@ -1,5 +1,6 @@
 package com.example.altruisticwebapp.Components;
 
+import com.example.altruisticwebapp.Exceptions.CoalitionIsNullException;
 import com.example.altruisticwebapp.Exceptions.DuplicatePlayerNameException;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         return false;
     }
 
-    public HashSet<CoalitionStructure> generateCoalitionStructures(){
+    public HashSet<CoalitionStructure> generateCoalitionStructures() throws Exception {
         HashSet<CoalitionStructure> coalStruc = new HashSet<>();
         int n = this.size();
         int r = 1;
@@ -66,7 +67,12 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
             c[r-1]++;
             if (c[r-1] > r-j) j--;
         }while (r != 1);
-
+        for (CoalitionStructure cs : coalStruc){
+            if (cs.equals(null)) throw new Exception("CS NULL");
+            for (int i = 0; i < cs.size(); i++){
+                if (cs.get(i).equals(null)) throw new CoalitionIsNullException(cs.get(i));
+            }
+        }
         return coalStruc;
     }
 
@@ -82,8 +88,8 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         for (int i = 0; i < pos.length; i++){
             c[pos[i]-1].add(get(i));
         }
-        for (int i = 0; i < c.length; i++){
-            cs.addCoalition(c[i]);
+        for (Coalition players : c) {
+            cs.addCoalition(players);
         }
     }
 

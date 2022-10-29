@@ -12,6 +12,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
     public void addCoalition(Coalition c){
         c.setKey(this.size());
+        c.setName("Coalition " + c.getKey());
         this.put(this.size(), c);
     }
 
@@ -45,7 +46,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return null;
     }
 
-    public HashSet<Coalition> blockingCoalitions(Game g, LOA loa) throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+    public HashSet<Coalition> blockingCoalitions(Game g, LOA loa) throws Exception {
         /*
         Coalition C blocks coalition structure T if for each player from C it holds that
         coalition C is preferred to any coalition of which i is part of
@@ -71,7 +72,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return blockers;
     }
 
-    public HashSet<Coalition> weaklyBlockingCoalitions(Game g, LOA loa) throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+    public HashSet<Coalition> weaklyBlockingCoalitions(Game g, LOA loa) throws Exception {
         /*
         Coalition C weakly blocks if there is at least one player who prefers C to any coalition
         that i is part of while another player j weakly prefers C to any coalition of which j
@@ -102,14 +103,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return weakBlockers;
     }
 
-    public boolean individuallyRational(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean individuallyRational(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
         for (int i = 0; i < g.getSize(); i++){
             if (!g.getPlayer(i).acceptable(getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) return false;
         }
         return true;
     }
 
-    public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         // For all players i their own coalition is weakly preferred to any other, if it would contain i additionally
         Coalition empty = new Coalition();
@@ -129,7 +130,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return true;
     }
 
-    public boolean individuallyStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+    public boolean individuallyStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
@@ -158,7 +159,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return true;
     }
 
-    public boolean contractuallyIndividuallyStable(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean contractuallyIndividuallyStable(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
@@ -193,7 +194,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return true;
     }
 
-    public boolean strictlyPopular(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean strictlyPopular(Game g, LOA loa) throws Exception {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
@@ -207,7 +208,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return countThis > countCmp;
     }
 
-    public boolean popular(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean popular(Game g, LOA loa) throws Exception {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
@@ -221,15 +222,15 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return countThis >= countCmp;
     }
 
-    public boolean coreStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+    public boolean coreStable(Game g, LOA loa) throws Exception {
         return blockingCoalitions(g, loa).isEmpty();
     }
 
-    public boolean strictlyCoreStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException {
+    public boolean strictlyCoreStable(Game g, LOA loa) throws Exception {
         return weaklyBlockingCoalitions(g, loa).isEmpty();
     }
 
-    public boolean perfect(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException {
+    public boolean perfect(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         // i prefers own coalition over any other possible one
 

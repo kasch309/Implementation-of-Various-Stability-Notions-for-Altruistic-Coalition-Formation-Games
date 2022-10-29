@@ -1,5 +1,6 @@
 package com.example.altruisticwebapp.Components;
 
+import com.example.altruisticwebapp.Exceptions.CoalitionIsNullException;
 import com.example.altruisticwebapp.Exceptions.InvalidLevelOfAltruismException;
 public class Player {
     private int key;
@@ -38,7 +39,7 @@ public class Player {
         return key;
     }
 
-    public boolean acceptable(Coalition c, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException {
+    public boolean acceptable(Coalition c, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException, CoalitionIsNullException {
         Coalition onlyPlayer = new Coalition();
         onlyPlayer.add(this);
         return this.weaklyPrefers(c, onlyPlayer, nw, loa);
@@ -60,8 +61,10 @@ public class Player {
         return (nw.getMatrix()[this.key][p.getKey()] == 0);
     }
 
-    public double utilitySFavg(Coalition a, NetworkOfFriends nw){
+    public double utilitySFavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = M * value(Player i, Coalition A) + avg(Player i, Friends F, Coalition A)
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
+
         int M = 1; //M >= n*n
         double utility = 0;
         utility = M * a.value(this, nw);
@@ -69,14 +72,17 @@ public class Player {
         return utility;
     }
 
-    public double utilityETavg(Coalition a, NetworkOfFriends nw){
+    public double utilityETavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = avgPlus(Player i, Friends F, Coalition A)
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
         return a.avgPlus(this, nw);
         //don't NEED this method but for readability purposes maybe not that bad, can be easily removed
     }
 
-    public double utilityATavg(Coalition a, NetworkOfFriends nw){
+    public double utilityATavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = value(Player i, Coalition A) + M*avg(Player i, Friends F, Coalition A)
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
+
         int M = 1; //M >= n*n, Degree of altruism? 
         double utility = 0;
         utility = a.value(this, nw);
@@ -85,29 +91,35 @@ public class Player {
         return utility;
     }
 
-    public double utilitySFmin(Coalition a, NetworkOfFriends nw){
+    public double utilitySFmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //min of values that friends give coalition
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
+
         int M = 1;
         double utility = 0;
         utility = M * a.value(this, nw) + a.min(this, nw);
         return utility;
     }
 
-    public double utilityETmin(Coalition a, NetworkOfFriends nw){
+    public double utilityETmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
+
         int M = 1;
         double utility = 0;
         utility = a.minPlus(this, nw);
         return utility;
     }
 
-    public double utilityATmin(Coalition a, NetworkOfFriends nw){
+    public double utilityATmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
+        if (a.equals(null)) throw new CoalitionIsNullException(a);
+
         int M = 1;
         double utility = 0;
         utility = a.value(this, nw) + M * a.min(this, nw);
         return utility;
     }
     
-    public boolean weaklyPrefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException {
+    public boolean weaklyPrefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException, CoalitionIsNullException {
         if (loa == LOA.SFavg){
             double utilityA = utilitySFavg(a, nw);
             double utilityB = utilitySFavg(b, nw);
@@ -137,7 +149,7 @@ public class Player {
         else throw new InvalidLevelOfAltruismException();
     }
 
-    public boolean prefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException {
+    public boolean prefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException, CoalitionIsNullException {
         if (loa == LOA.SFavg){
             double utilityA = utilitySFavg(a, nw);
             double utilityB = utilitySFavg(b, nw);

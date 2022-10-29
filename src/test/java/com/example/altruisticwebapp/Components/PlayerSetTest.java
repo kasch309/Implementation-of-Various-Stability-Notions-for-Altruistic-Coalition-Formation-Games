@@ -16,10 +16,16 @@ class PlayerSetTest {
     }
 
     @Test
-    void generateCoalitionStructures() {
+    void generateCoalitionStructures() throws Exception {
         PlayerSet ps = new PlayerSet(4);
 
         HashSet<CoalitionStructure> coalStruc = ps.generateCoalitionStructures();
+        for (CoalitionStructure cs : coalStruc){
+            assertNotEquals(null, cs);
+            for (int i = 0; i < cs.size(); i++){
+                assertNotEquals(null, cs.get(i));
+            }
+        }
         assertEquals(15, coalStruc.size());
     }
 
