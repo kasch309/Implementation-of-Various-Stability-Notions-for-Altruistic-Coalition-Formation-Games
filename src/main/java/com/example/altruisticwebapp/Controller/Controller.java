@@ -38,7 +38,6 @@ public class Controller {
         return "construction";
     }
 
-
     @PostMapping("/addPlayer")
     public String addPlayer(@RequestParam("name") String name)
             throws NoPlayerSetAssignedException, NoNetworkAssignedException {
@@ -256,7 +255,6 @@ public class Controller {
             this.cs = csAll;
             break;
         }
-
         return "redirect:/construct";
     }
 

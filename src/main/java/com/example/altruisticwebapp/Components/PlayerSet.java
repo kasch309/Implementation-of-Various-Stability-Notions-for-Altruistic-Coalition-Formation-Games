@@ -67,12 +67,6 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
             c[r-1]++;
             if (c[r-1] > r-j) j--;
         }while (r != 1);
-        for (CoalitionStructure cs : coalStruc){
-            if (cs.equals(null)) throw new Exception("CS NULL");
-            for (int i = 0; i < cs.size(); i++){
-                if (cs.get(i).equals(null)) throw new CoalitionIsNullException(cs.get(i));
-            }
-        }
         return coalStruc;
     }
 

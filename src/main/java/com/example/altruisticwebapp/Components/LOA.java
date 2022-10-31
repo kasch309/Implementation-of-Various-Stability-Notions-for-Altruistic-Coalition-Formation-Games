@@ -19,7 +19,7 @@ public enum LOA { //Level Of Altruism
         if (str1.equals("minimum")){
             if (str2.equals("selfish_first")) return SFmin;
             if (str2.equals("equal_treatment")) return ETmin;
-            if (str2.equals("altruistic_treatment")) return ETmin;
+            if (str2.equals("altruistic_treatment")) return ATmin;
         }
         return null;
     }
