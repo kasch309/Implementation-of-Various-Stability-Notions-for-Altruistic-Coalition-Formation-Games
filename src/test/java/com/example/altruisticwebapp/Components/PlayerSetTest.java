@@ -23,7 +23,7 @@ class PlayerSetTest {
         for (CoalitionStructure cs : coalStruc){
             assertNotEquals(null, cs);
             for (int i = 0; i < cs.size(); i++){
-                assertNotEquals(null, cs.get(i));
+                assertNotNull(cs.get(i));
             }
         }
         assertEquals(15, coalStruc.size());

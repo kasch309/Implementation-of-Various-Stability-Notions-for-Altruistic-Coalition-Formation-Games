@@ -63,7 +63,6 @@ public class Player {
 
     public double utilitySFavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = M * value(Player i, Coalition A) + avg(Player i, Friends F, Coalition A)
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
 
         int M = 1; //M >= n*n
         double utility = 0;

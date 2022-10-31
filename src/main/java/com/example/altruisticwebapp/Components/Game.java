@@ -8,6 +8,7 @@ import java.util.HashSet;
 public class Game {
     private NetworkOfFriends nw;
     private PlayerSet ps;
+    private Log log = new Log();
 
     public Game (NetworkOfFriends nw) throws NoNetworkAssignedException {
         this.nw = nw;
@@ -25,6 +26,12 @@ public class Game {
 
     public void removePlayer(Player p){
         ps.removePlayer(p, nw);
+    }
+    public Log getLog(){
+        return this.log;
+    }
+    public void addEntry(String str){
+        this.log.addEntry(str);
     }
 
     public void renamePlayer(Integer i, String name) throws NoPlayerSetAssignedException {

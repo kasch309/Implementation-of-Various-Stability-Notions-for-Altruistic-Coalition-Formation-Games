@@ -15,7 +15,7 @@ public class Controller {
     Game g;
     CoalitionStructure cs;
     String re = "redirect:";
-    Result res;
+    Result res = new Result();
 
     public Controller() {
         cs = new CoalitionStructure();
@@ -35,6 +35,7 @@ public class Controller {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
+        model.addAttribute("result", res);
         return "construction";
     }
 
@@ -46,7 +47,8 @@ public class Controller {
         }
 
         Player p = new Player(name);
-        if (!cs.isEmpty()) cs.get(0).add(p);
+        if (!cs.isEmpty())
+            cs.get(0).add(p);
         g.addPlayer(p);
 
         return re;
@@ -86,7 +88,8 @@ public class Controller {
     }
 
     @PostMapping("/renamePlayer")
-    public String renamePlayer(@RequestParam("renamePlayer") int key, @RequestParam("newPlayerName") String name) throws NoPlayerSetAssignedException {
+    public String renamePlayer(@RequestParam("renamePlayer") int key, @RequestParam("newPlayerName") String name)
+            throws NoPlayerSetAssignedException {
         g.renamePlayer(key, name);
         return re;
     }
@@ -98,14 +101,18 @@ public class Controller {
     }
 
     @PostMapping("/addFriendship")
-    public String addFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2) throws NoNetworkAssignedException {
-        if (g.getNetwork().areFriends(key1, key2)) g.getNetwork().removeFriendship(key1, key2);
-        else g.getNetwork().addFriendship(key1, key2);
+    public String addFriendship(@RequestParam("addKey1") int key1, @RequestParam("addKey") int key2)
+            throws NoNetworkAssignedException {
+        if (g.getNetwork().areFriends(key1, key2))
+            g.getNetwork().removeFriendship(key1, key2);
+        else
+            g.getNetwork().addFriendship(key1, key2);
         return re;
     }
 
     @GetMapping("/analysis")
-    public String analysis(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+    public String analysis(Model model)
+            throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
@@ -131,7 +138,7 @@ public class Controller {
             throws Exception {
         res = new Result();
         g.getPlayers().printPlayers();
-        for (int i = 0; i < g.getSize(); i++){
+        for (int i = 0; i < g.getSize(); i++) {
             System.out.println(g.getPlayer(i).getKey());
         }
         LOA loa = LOA.stringToEnum(valueBase, treatment);
@@ -144,6 +151,11 @@ public class Controller {
 
         if (perfect && !res.perfect) {
             if (cs.perfect(g, loa)) {
+                g.addEntry("The coalition structure is perfect.");
+                g.addEntry("The coalition structure is strictly popular.");
+                g.addEntry("The coalition structure is popular.");
+                g.addEntry("The coalition structure is popular.");
+                g.addEntry("The coalition struc");
                 res.perfect = true;
                 res.strictlyPopular = true;
                 res.popular = true;
@@ -208,54 +220,65 @@ public class Controller {
         return "redirect:/analysis";
     }
 
-    @GetMapping("/construct/build")
+    @PostMapping("/construct/build")
     public String buildCoalitionStructure(@RequestParam("valueBase") String valueBase,
-                                          @RequestParam("treatment") String treatment,
-                                          @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
-                                          @RequestParam(required = false, value = "nashStable") boolean nashStable,
-                                          @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
-                                          @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
-                                          @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
-                                          @RequestParam(required = false, value = "popular") boolean popular,
-                                          @RequestParam(required = false, value = "coreStable") boolean coreStable,
-                                          @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
-                                          @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
-
+            @RequestParam("treatment") String treatment,
+            @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
+            @RequestParam(required = false, value = "nashStable") boolean nashStable,
+            @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
+            @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
+            @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
+            @RequestParam(required = false, value = "popular") boolean popular,
+            @RequestParam(required = false, value = "coreStable") boolean coreStable,
+            @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
+            @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
+        boolean changed = false;
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
-        for (CoalitionStructure csAll : all){
-            System.out.println(csAll.getCoalition(0).getName());
-            if (individuallyRational){
-                if (!csAll.individuallyRational(g, loa)) continue;
+        g.addEntry(all.size() + " coalition structures generated.");
+        for (CoalitionStructure csAll : all) {
+            if (individuallyRational) {
+                if (!csAll.individuallyRational(g, loa))
+                    continue;
             }
-            if (nashStable){
-                if (!csAll.nashStable(g, loa)) continue;
+            if (nashStable) {
+                if (!csAll.nashStable(g, loa))
+                    continue;
             }
-            if (individuallyStable){
-                if (!csAll.individuallyStable(g, loa)) continue;
+            if (individuallyStable) {
+                if (!csAll.individuallyStable(g, loa))
+                    continue;
             }
-            if (contractuallyIndividuallyStable){
-                if (!csAll.contractuallyIndividuallyStable(g, loa)) continue;
+            if (contractuallyIndividuallyStable) {
+                if (!csAll.contractuallyIndividuallyStable(g, loa))
+                    continue;
             }
-            if (strictlyPopular){
-                if (!csAll.strictlyPopular(g, loa)) continue;
+            if (strictlyPopular) {
+                if (!csAll.strictlyPopular(g, loa))
+                    continue;
             }
             if (popular) {
-                if (!csAll.popular(g, loa)) continue;
+                if (!csAll.popular(g, loa))
+                    continue;
             }
             if (coreStable) {
-                if (!csAll.coreStable(g, loa)) continue;
+                if (!csAll.coreStable(g, loa))
+                    continue;
             }
-            if (strictlyCoreStable){
-                if(!csAll.strictlyCoreStable(g, loa)) continue;
+            if (strictlyCoreStable) {
+                if (!csAll.strictlyCoreStable(g, loa))
+                    continue;
             }
-            if (perfect){
-                if (!csAll.perfect(g, loa)) continue;
+            if (perfect) {
+                if (!csAll.perfect(g, loa))
+                    continue;
             }
             this.cs = csAll;
-            break;
+            g.addEntry("The coalition structure generated fulfilled the requirements.");
+            return "redirect:/construction";
         }
-        return "redirect:/construct";
+        g.addEntry("There exists no coalition structure fulfilling the requirements.");
+        return "redirect:/construction";
     }
 
 }

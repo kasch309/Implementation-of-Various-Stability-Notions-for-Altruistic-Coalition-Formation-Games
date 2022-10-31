@@ -51,7 +51,8 @@
             data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
-            aria-label="Toggle navigation">
+            aria-label="Toggle navigation"
+    >
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -60,10 +61,7 @@
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a
-                        class="nav-link"
-                        href="/analysis"
-                >Analysis</a>
+                <a class="nav-link" href="/analysis">Analysis</a>
             </li>
             <li class="nav-item">
                 <a
@@ -81,10 +79,7 @@
         <div class="col-4">
             <div class="list">
                 <h5>Level of altruism</h5>
-                <form
-                    th:action="@{/construct/build}"
-                    method="post"
-                >
+                <form th:action="@{/construct/build}" method="post">
                     <div class="btn-group">
                         <label for="btnradio1"></label>
                         <input
@@ -96,8 +91,7 @@
                                 th:name="valueBase"
                                 value="average"
                         />
-                        <label
-                                class="btn btn-outline-primary"
+                        <label class="btn btn-outline-primary"
                         >Average</label
                         >
                         <input
@@ -110,11 +104,12 @@
                         />
                         <label
                                 class="btn btn-outline-primary"
-                                for="btnradio2">
+                                for="btnradio2"
+                        >
                             Minimum
                         </label>
                     </div>
-                    <br/>
+                    <br />
                     <div
                             class="btn-group"
                             aria-label="Basic radio toggle button group"
@@ -127,23 +122,27 @@
                                 id="btnradio3"
                                 autocomplete="off"
                                 value="selfish_first"
-                                checked/>
+                                checked
+                        />
                         <label
                                 style="width: 6rem"
                                 class="btn btn-outline-primary"
                                 for="btnradio3"
-                        >Selfish First</label>
+                        >Selfish First</label
+                        >
                         <input
                                 type="radio"
                                 class="btn-check"
                                 th:name="treatment"
                                 id="btnradio4"
                                 autocomplete="off"
-                                value="equal_treatment"/>
+                                value="equal_treatment"
+                        />
                         <label
                                 class="btn btn-outline-primary"
                                 for="btnradio4"
-                                style="width: 6rem">Equal Treatment
+                                style="width: 6rem"
+                        >Equal Treatment
                         </label>
                         <input
                                 type="radio"
@@ -151,11 +150,13 @@
                                 th:name="treatment"
                                 id="btnradio5"
                                 autocomplete="off"
-                                value="altruistic_treatment"/>
+                                value="altruistic_treatment"
+                        />
                         <label
                                 class="btn btn-outline-primary"
                                 for="btnradio5"
-                                style="width: 6rem">Altruistic Treatment
+                                style="width: 6rem"
+                        >Altruistic Treatment
                         </label>
                     </div>
                     <label
@@ -174,7 +175,7 @@
                         <span style="margin-left: 0.2rem"
                         >Individually Rational</span
                         >
-                        <input type="hidden"/>
+                        <input type="hidden" />
                     </label>
                     <label style="display: flex; align-items: center">
                         <input
@@ -346,10 +347,12 @@
             </div>
         </div>
     </div>
-    <span th:if="${res.individuallyRational}" class="alert alert-success" role="alert">
-        Blockers
-    </span>
+    <span
+            th:if="${result.individuallyRational}"
+            class="alert alert-success"
+            role="alert"
+    >Blockers
+            </span>
 </div>
 </body>
 </html>
-
