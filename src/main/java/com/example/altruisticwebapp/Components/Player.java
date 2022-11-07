@@ -64,7 +64,7 @@ public class Player {
     public double utilitySFavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = M * value(Player i, Coalition A) + avg(Player i, Friends F, Coalition A)
 
-        int M = 1; //M >= n*n
+        int M = (int) Math.pow(nw.getSize(), 2); //M >= n*n
         double utility = 0;
         utility = M * a.value(this, nw);
         utility += a.avg(this, nw);
@@ -82,7 +82,7 @@ public class Player {
         //u_i^SFavg = value(Player i, Coalition A) + M*avg(Player i, Friends F, Coalition A)
         if (a.equals(null)) throw new CoalitionIsNullException(a);
 
-        int M = 1; //M >= n*n, Degree of altruism? 
+        int M = (int) Math.pow(nw.getSize(), 2); //M >= n*n, Degree of altruism?
         double utility = 0;
         utility = a.value(this, nw);
         utility += a.avg(this, nw);
@@ -94,7 +94,7 @@ public class Player {
         //min of values that friends give coalition
         if (a.equals(null)) throw new CoalitionIsNullException(a);
 
-        int M = 1;
+        int M = (int) Math.pow(nw.getSize(), 3);
         double utility = 0;
         utility = M * a.value(this, nw) + a.min(this, nw);
         return utility;
@@ -103,7 +103,6 @@ public class Player {
     public double utilityETmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         if (a.equals(null)) throw new CoalitionIsNullException(a);
 
-        int M = 1;
         double utility = 0;
         utility = a.minPlus(this, nw);
         return utility;
@@ -112,8 +111,7 @@ public class Player {
     public double utilityATmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         if (a.equals(null)) throw new CoalitionIsNullException(a);
 
-        int M = 1;
-        double utility = 0;
+        int M = (int) Math.pow(nw.getSize(), 3);        double utility = 0;
         utility = a.value(this, nw) + M * a.min(this, nw);
         return utility;
     }

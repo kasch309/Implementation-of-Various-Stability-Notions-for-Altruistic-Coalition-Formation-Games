@@ -14,6 +14,8 @@ public class Controller {
 
     Game g;
     CoalitionStructure cs;
+
+    CoalitionStructure cscontruct;
     String re = "redirect:";
     Result res = new Result();
 
@@ -33,6 +35,8 @@ public class Controller {
 
     @GetMapping("/construction")
     public String construction(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
+        g.getLog().clear();
+        model.addAttribute("log", g.getLog());
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
@@ -114,6 +118,8 @@ public class Controller {
     @GetMapping("/analysis")
     public String analysis(Model model)
             throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+        g.getLog().clear();
+
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
