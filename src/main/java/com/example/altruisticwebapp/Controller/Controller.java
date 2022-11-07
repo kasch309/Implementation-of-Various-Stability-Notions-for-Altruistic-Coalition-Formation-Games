@@ -86,7 +86,7 @@ public class Controller {
 
     @PostMapping("/addPlayerToCoalition")
     public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") int coal)
-            throws NoPlayerSetAssignedException, PlayerNotFoundException {
+            throws NoPlayerSetAssignedException {
         cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
         cs.getCoalition(coal).add(g.getPlayer(key));
         return re;
@@ -117,7 +117,7 @@ public class Controller {
 
     @GetMapping("/analysis")
     public String analysis(Model model)
-            throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+            throws NoPlayerSetAssignedException, NoNetworkAssignedException {
         g.getLog().clear();
 
         model.addAttribute("player_set", g.getPlayers());
@@ -235,7 +235,6 @@ public class Controller {
                                           @RequestParam(required = false, value = "coreStable") boolean coreStable,
                                           @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
                                           @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
-        boolean changed = false;
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         g.addEntry(all.size() + " coalition structures generated.");

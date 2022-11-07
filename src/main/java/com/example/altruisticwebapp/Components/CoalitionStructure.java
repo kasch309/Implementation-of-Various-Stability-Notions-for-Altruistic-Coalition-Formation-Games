@@ -12,8 +12,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
     public void addCoalition(Coalition c){
         c.setKey(this.size());
-        c.setName("Coalition " + c.getKey());
+        //c.setName("Coalition " + c.getKey());
+        System.out.println("Coalition: " + c.getName() + " added.");
+        System.out.println("---");
         this.put(this.size(), c);
+        for (int i = 0; i<this.size(); i++){
+            System.out.println(this.get(i).getName());
+        }
+
     }
 
     public Coalition getCoalition(int key){
@@ -44,6 +50,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             if (c.contains(p)) return c;
         }
         return null;
+    }
+
+    public int getPlayersCoalitionKey(Player p){
+        for (int i = 0; i < this.size(); i++){
+            Coalition c = this.get(i);
+            if (c.contains(p)) return i;
+        }
+        return -1;
     }
 
     public HashSet<Coalition> blockingCoalitions(Game g, LOA loa) throws Exception {
@@ -122,22 +136,20 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         // For all players i their own coalition is weakly preferred to any other, if it would contain i additionally
-        Coalition empty = new Coalition();
-        this.addCoalition(empty);
+        CoalitionStructure test = (CoalitionStructure) this.clone();
+        Coalition empty = new Coalition("empty nash");
+        test.addCoalition(empty);
         for (int i = 0; i < g.getSize(); i++){
-            for (int j = 0; j < this.size(); j++){
-                Coalition c = this.get(j);
+            for (int j = 0; j < test.size(); j++){
+                Coalition c = test.get(j);
                 Coalition d = c.duplicate();
                 d.add(g.getPlayer(i));
                 if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
-                    this.remove(empty);
                     g.addEntry("The coalition structure is not Nash stable");
-                    this.remove(empty);
                     return false;
                 }
             }
         }
-        this.remove(empty);
         g.addEntry("The coalition structure is Nash stable.");
         return true;
     }
@@ -148,21 +160,19 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
         contains them too or there is a player j who prefers c if it contains i too
         */
-        Coalition empty = new Coalition();
-        this.addCoalition(empty);
+        CoalitionStructure test = (CoalitionStructure) this.clone();
+        Coalition empty = new Coalition("empty indivStable");
+        test.addCoalition(empty);
         for (int i = 0; i < g.getSize(); i++){
             Player p = g.getPlayer(i);
-            for (int j = 0; j < this.size(); j++){
-                Coalition c = this.get(j);
-                if (this.getPlayersCoalition(p).equals(c)) continue;
+            for (int j = 0; j < test.size(); j++){
+                Coalition c = test.get(j);
+                if (test.getPlayersCoalition(p).equals(c)) continue;
                 Coalition dup = c.duplicate();
                 dup.add(p);
                 if (!p.weaklyPrefers(c, dup, g.getNetwork(), loa)){
                     for(Player q : c){
                         if(!q.prefers(c, dup, g.getNetwork(), loa)) {
-                            this.remove(c);
-                            this.remove(dup);
-                            this.remove(empty);
                             g.addEntry("The coalition structure is not individually stable.");
                             return false;
                         }
@@ -182,12 +192,12 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         contains them too or there is a player j who prefers c if it contains i too OR there is player k, i != k, k
         is in coalition of i, k prefers coalition of i over coalition of i if it would not contain i
         */
-
-        Coalition empty = new Coalition();
-        this.addCoalition(empty);
+        CoalitionStructure test = (CoalitionStructure) this.clone();
+        Coalition empty = new Coalition("empty cis");
+        test.addCoalition(empty);
         for (int i = 0; i < g.getSize(); i++){
             for (int j = 0; j < this.size(); j++){
-                Coalition c = this.get(j);
+                Coalition c = test.get(j);
                 Coalition d = c.duplicate();
                 d.add(g.getPlayer(i));
                 if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
@@ -197,9 +207,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                                 Coalition e = c.duplicate();
                                 e.remove(g.getPlayer(i));
                                 if (!p.prefers(c, d, g.getNetwork(), loa)) {
-                                    this.remove(empty);
-                                    this.remove(c);
-                                    this.remove(d);
                                     g.addEntry("The coalition structure is not contractually individually stable.");
                                     return false;
                                 }
@@ -209,8 +216,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 }
             }
         }
-
-        this.remove(empty);
         g.addEntry("The coalition structure is contractually individually stable.");
         return true;
     }
