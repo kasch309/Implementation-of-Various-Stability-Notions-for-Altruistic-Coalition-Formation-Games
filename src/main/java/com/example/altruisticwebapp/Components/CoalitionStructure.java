@@ -132,6 +132,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
                     this.remove(empty);
                     g.addEntry("The coalition structure is not Nash stable");
+                    this.remove(empty);
                     return false;
                 }
             }
@@ -159,6 +160,8 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (!p.weaklyPrefers(c, dup, g.getNetwork(), loa)){
                     for(Player q : c){
                         if(!q.prefers(c, dup, g.getNetwork(), loa)) {
+                            this.remove(c);
+                            this.remove(dup);
                             this.remove(empty);
                             g.addEntry("The coalition structure is not individually stable.");
                             return false;
@@ -195,6 +198,8 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                                 e.remove(g.getPlayer(i));
                                 if (!p.prefers(c, d, g.getNetwork(), loa)) {
                                     this.remove(empty);
+                                    this.remove(c);
+                                    this.remove(d);
                                     g.addEntry("The coalition structure is not contractually individually stable.");
                                     return false;
                                 }
@@ -204,6 +209,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 }
             }
         }
+
         this.remove(empty);
         g.addEntry("The coalition structure is contractually individually stable.");
         return true;
@@ -263,11 +269,11 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
     public boolean strictlyCoreStable(Game g, LOA loa) throws Exception {
         if(weaklyBlockingCoalitions(g, loa).isEmpty()){
-            g.addEntry("The coalition structure is core stable.");
+            g.addEntry("The coalition structure is strictly core stable.");
             return true;
         }
         else {
-            g.addEntry("The coalition structure is not core stable.");
+            g.addEntry("The coalition structure is not strictly core stable.");
             return false;
         }
     }

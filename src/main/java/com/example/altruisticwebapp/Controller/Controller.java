@@ -20,6 +20,7 @@ public class Controller {
     public Controller() {
         cs = new CoalitionStructure();
         g = new Game(5);
+
     }
 
     @GetMapping("/")
@@ -118,6 +119,7 @@ public class Controller {
         model.addAttribute("friendMatrix", g.getNetwork());
         model.addAttribute("blocking_coalitions", new HashSet<Coalition>());
         model.addAttribute("weakly_blocking_coalitions", new HashSet<Coalition>());
+        model.addAttribute("log", g.getLog());
         model.addAttribute("result", res);
         return "analysis";
     }
@@ -151,11 +153,6 @@ public class Controller {
 
         if (perfect && !res.perfect) {
             if (cs.perfect(g, loa)) {
-                g.addEntry("The coalition structure is perfect.");
-                g.addEntry("The coalition structure is strictly popular.");
-                g.addEntry("The coalition structure is popular.");
-                g.addEntry("The coalition structure is popular.");
-                g.addEntry("The coalition struc");
                 res.perfect = true;
                 res.strictlyPopular = true;
                 res.popular = true;
@@ -222,16 +219,16 @@ public class Controller {
 
     @PostMapping("/construct/build")
     public String buildCoalitionStructure(@RequestParam("valueBase") String valueBase,
-            @RequestParam("treatment") String treatment,
-            @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
-            @RequestParam(required = false, value = "nashStable") boolean nashStable,
-            @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
-            @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
-            @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
-            @RequestParam(required = false, value = "popular") boolean popular,
-            @RequestParam(required = false, value = "coreStable") boolean coreStable,
-            @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
-            @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
+                                          @RequestParam("treatment") String treatment,
+                                          @RequestParam(required = false, value = "individuallyRational") boolean individuallyRational,
+                                          @RequestParam(required = false, value = "nashStable") boolean nashStable,
+                                          @RequestParam(required = false, value = "individuallyStable") boolean individuallyStable,
+                                          @RequestParam(required = false, value = "contractuallyIndividuallyStable") boolean contractuallyIndividuallyStable,
+                                          @RequestParam(required = false, value = "strictlyPopular") boolean strictlyPopular,
+                                          @RequestParam(required = false, value = "popular") boolean popular,
+                                          @RequestParam(required = false, value = "coreStable") boolean coreStable,
+                                          @RequestParam(required = false, value = "strictlyCoreStable") boolean strictlyCoreStable,
+                                          @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
         boolean changed = false;
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
