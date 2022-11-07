@@ -64,10 +64,6 @@ class PlayerSetTest {
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
     }
 
-
-
-
-
     @Test
     void removePlayer() {
         PlayerSet ps = new PlayerSet(3);

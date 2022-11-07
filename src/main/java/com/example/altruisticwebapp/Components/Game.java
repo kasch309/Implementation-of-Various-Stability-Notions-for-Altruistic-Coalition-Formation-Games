@@ -2,9 +2,6 @@ package com.example.altruisticwebapp.Components;
 
 import com.example.altruisticwebapp.Exceptions.*;
 
-
-import java.util.HashSet;
-
 public class Game {
     private NetworkOfFriends nw;
     private PlayerSet ps;
@@ -28,7 +25,7 @@ public class Game {
         ps.removePlayer(p, nw);
     }
     public Log getLog(){
-        return this.log;
+        return log.output();
     }
     public void addEntry(String str){
         this.log.addEntry(str);
