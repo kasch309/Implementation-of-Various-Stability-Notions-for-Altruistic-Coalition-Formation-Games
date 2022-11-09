@@ -15,7 +15,7 @@
     <style>
         .list {
             padding: 1rem;
-            border: solid 3px gray;
+            border: solid 3px lightskyblue;
             border-radius: 1rem;
             margin-bottom: 2rem;
             margin-top: 2rem;
@@ -278,90 +278,228 @@
             </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-6" style="z-index: 2">
             <script src="https://code.highcharts.com/highcharts.js"></script>
             <script src="https://code.highcharts.com/highcharts-more.js"></script>
             <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script src="https://code.highcharts.com/modules/networkgraph.js"></script>
             <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-            <div
-                    id="container"
-                    style="
-                            border-radius: 1rem;
-                            border: solid 3px gray;
-                            height: 36rem;
-                            margin-top: 2rem;
-                        "
+            <form
+                    th:action="@{/analysis/changeGraph}"
+                    method="post"
+                    style="position: relative; z-index: 1"
             >
-                <script type="text/javascript" th:inline="javascript">
-                    /*<![CDATA[*/
-                    var coalitions = [[${coalition_structure}]];
+                <div
+                        th:if="${coalchart}"
+                        id="container"
+                        style="
+                                border-radius: 1rem 1rem 0rem 0rem;
+                                border: solid 3px lightskyblue;
+                                border-bottom: 0px;
+                                height: 33.5rem;
+                                margin-top: 2rem;
+                            "
+                >
+                    <script
+                            type="text/javascript"
+                            th:inline="javascript"
+                    >
+                        /*<![CDATA[*/
+                        var coalitions = [[${coalition_structure}]];
 
-                    console.log(coalitions)
-                    let series = [];
-                    for (let i in coalitions) {
-                        series.push({
-                            name: "Coalition " + i, data: coalitions[i].map(player => {
-                                return {name: player.name, value: 1, color: "hsl(50%,100%,50%)"}
-                            }), color: "hsl(" + i * 20 + ", 50%, 60%)"
-                        });
+                        console.log(coalitions)
+                        let series = [];
+                        for (let i in coalitions) {
+                            series.push({
+                                name: "Coalition " + i, data: coalitions[i].map(player => {
+                                    return {name: player.name, value: 1, color: "hsl(50%,100%,50%)"}
+                                }), color: "hsl(" + i * 20 + ", 50%, 60%)"
+                            });
 
-                    }
+                        }
 
-                    /*]]>*/
-                    Highcharts.chart("container", {
-                        chart: {
-                            type: "packedbubble",
+                        /*]]>*/
+                        Highcharts.chart("container", {
+                            chart: {
+                                type: "packedbubble",
 
-                        },
-                        title: {
-                            text: "Coalitions",
-                        },
-                        tooltip: {
-                            useHTML: true,
-                            pointFormat:
-                                "<b>{point.name}</b>",
-                        },
-                        plotOptions: {
-                            packedbubble: {
-                                minSize: "20%",
-                                maxSize: "100%",
-                                zMin: 0,
-                                zMax: 1000,
-                                layoutAlgorithm: {
-                                    gravitationalConstant: 0.05,
-                                    splitSeries: true,
-                                    seriesInteraction: false,
-                                    dragBetweenSeries: true,
-                                    parentNodeLimit: true,
-                                },
-                                dataLabels: {
-                                    enabled: true,
-                                    format: "{point.name}",
-                                    filter: {
-                                        property: "y",
-                                        operator: ">",
-                                        value: 250,
+                            },
+                            title: {
+                                text: "Coalitions",
+                            },
+                            tooltip: {
+                                useHTML: true,
+                                pointFormat:
+                                    "<b>{point.name}</b>",
+                            },
+                            plotOptions: {
+                                packedbubble: {
+                                    minSize: "20%",
+                                    maxSize: "100%",
+                                    zMin: 0,
+                                    zMax: 1000,
+                                    layoutAlgorithm: {
+                                        gravitationalConstant: 0.05,
+                                        splitSeries: true,
+                                        seriesInteraction: false,
+                                        dragBetweenSeries: true,
+                                        parentNodeLimit: true,
                                     },
-                                    style: {
-                                        color: "black",
-                                        textOutline: "none",
-                                        fontWeight: "normal",
+                                    dataLabels: {
+                                        enabled: true,
+                                        format: "{point.name}",
+                                        filter: {
+                                            property: "y",
+                                            operator: ">",
+                                            value: 250,
+                                        },
+                                        style: {
+                                            color: "black",
+                                            textOutline: "none",
+                                            fontWeight: "normal",
+                                        },
                                     },
                                 },
                             },
-                        },
-                        series: series,
+                            series: series,
 
-                    });
-                </script>
-            </div>
+                        })
+                    </script>
+                </div>
+                <div
+                        th:if="${!coalchart}"
+                        id="container1"
+                        style="
+                                z-index: 2;
+                                border-radius: 1rem 1rem 0rem 0rem;
+                                border: solid 3px lightskyblue;
+                                border-bottom: 0px;
+                                height: 33.5rem;
+                                margin-top: 2rem;
+                            "
+                >
+                    <script
+                            type="text/javascript"
+                            th:inline="javascript"
+                    >
+
+                        var colors= ["lightgreen", "salmon", "orange", "violet", "slateblue", "pink", "brown", "gray", "blue", "lemonchiffon"];
+                        /*<![CDATA[*/
+                        var theList = [[${player_set}]];
+                        var friendNetwork = [[${friendMatrix}]]
+                        var nodes = [];
+                        var friends = [];
+                        console.log(theList);
+                        colorcount=0;
+                        for(let i in theList){
+                            if(colorcount == colors.length) colorcount=0;
+                            colorcount++;
+                            nodes.push({id: theList[i].name,marker: {radius: 20}, color: colors[colorcount] })
+                        }
+                        for(let i in friendNetwork.matrix){
+                            for(let j= 0; j<friendNetwork.matrix[i].length; j++){
+                                if(friendNetwork.matrix[i][j] == 1){
+                                    friends.push([theList[i].name, theList[j].name])
+                                }
+                            }
+                        }
+                        console.log(friendNetwork)
+                        /*]]>*/
+                        Highcharts.chart("container1", {
+                            chart: {
+                                type: "networkgraph",
+                                marginTop: 40,
+                            },
+                            title: {
+                                text: "Network of friendships",
+                            },
+                            tooltip: {
+                                formatter: function () {
+                                    return "<b>" + this.key + "</b> ";
+                                },
+                            },
+                            plotOptions: {
+                                networkgraph: {
+                                    keys: ["from", "to"],
+                                    layoutAlgorithm: {
+                                        enableSimulation: true,
+                                        integration: "verlet",
+                                        linkLength: 80,
+                                    },
+                                },
+                            },
+                            series: [
+                                {
+                                    marker: {
+                                        radius: 13,
+                                    },
+                                    dataLabels: {
+                                        enabled: true,
+                                        linkFormat: "",
+                                        allowOverlap: true,
+                                        style: {
+                                            textOutline: true,
+                                        },
+                                    },
+                                    data: friends,
+                                    nodes: nodes,
+                                },
+                            ],
+                        });
+                    </script>
+                </div>
+
+                <div
+                        class="btn-group"
+                        style="
+                                display: flex;
+                                margin-top: -1.6rem;
+                                z-index: -1;
+                                margin-left: 1px;
+                            "
+                >
+                    <input
+                            type="radio"
+                            class="btn-check"
+                            id="fgbtn"
+                            autocomplete="off"
+                            th:checked="${!coalchart}"
+                            th:name="coalchart"
+                            value="false"
+                            onchange="this.form.submit();"
+                    />
+                    <label
+                            class="btn"
+                            for="fgbtn"
+                            th:style="${!coalchart ? 'background-color: lightskyblue; text-color: white; padding-top: 2rem; border-radius: 0rem 0rem 0rem 1rem;' : 'background-color: white; text-color: lightskyblue; padding-top: 2rem; border:solid 3px lightskyblue; border-radius: 0rem 0rem 0rem 1rem;'  }"
+                    >Friendships</label
+                    >
+                    <input
+                            type="radio"
+                            class="btn-check"
+                            id="coalbtn"
+                            autocomplete="off"
+                            th:checked="${coalchart}"
+                            th:name="coalchart"
+                            value="true"
+                            onchange="this.form.submit();"
+                    />
+                    <label
+                            class="btn"
+                            for="coalbtn"
+                            th:style="${coalchart ? 'background-color: lightskyblue; text-color: white; padding-top: 2rem; border-radius: 0rem 0rem 1rem 0rem;' : 'background-color: white; text-color: lightskyblue; padding-top: 2rem; border:solid 3px lightskyblue; border-radius: 0rem 0rem 1rem 0rem;'  }"
+                    >
+                        Coalitions
+                    </label>
+                </div>
+            </form>
         </div>
         <div class="col">
             <div class="list">
                 <ul class="list-group">
                     <li
                             th:each="entry: ${log}"
-                            th:attr="class=${entry.value.contains('not') ? 'list-group-item list-group-item-danger' : 'list-group-item list-group-item-success'}"
+                            th:attr="class=${entry.value.contains('no') ? 'list-group-item list-group-item-danger' : 'list-group-item list-group-item-success'}"
                     >
                         <span th:text="${entry.value}"></span>
                     </li>

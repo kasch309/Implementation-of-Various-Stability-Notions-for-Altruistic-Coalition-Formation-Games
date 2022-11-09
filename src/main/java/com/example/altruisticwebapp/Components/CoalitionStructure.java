@@ -12,7 +12,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
     public void addCoalition(Coalition c){
         c.setKey(this.size());
-        //c.setName("Coalition " + c.getKey());
+        c.setName("Coalition " + c.getKey());
         System.out.println("Coalition: " + c.getName() + " added.");
         System.out.println("---");
         this.put(this.size(), c);
@@ -82,9 +82,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (blocks) blockers.add(cs.get(j));
             }
         }
-        for (Coalition wb : blockers){
-            g.addEntry("Coalition '" + wb.getName() + "' blocks.");
-        }
         return blockers;
     }
 
@@ -116,20 +113,15 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (blocks) weakBlockers.add(cs.get(j));
             }
         }
-        for (Coalition wb : weakBlockers){
-            g.addEntry("Coalition '" + wb.getName() + "' blocks weakly.");
-        }
         return weakBlockers;
     }
 
     public boolean individuallyRational(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
         for (int i = 0; i < g.getSize(); i++){
             if (!g.getPlayer(i).acceptable(getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
-                g.addEntry("The coalition structure is not individually rational.");
                 return false;
             }
         }
-        g.addEntry("The coalition structure is individually rational.");
         return true;
     }
 
@@ -145,12 +137,10 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 Coalition d = c.duplicate();
                 d.add(g.getPlayer(i));
                 if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
-                    g.addEntry("The coalition structure is not Nash stable");
                     return false;
                 }
             }
         }
-        g.addEntry("The coalition structure is Nash stable.");
         return true;
     }
 
@@ -173,14 +163,12 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 if (!p.weaklyPrefers(c, dup, g.getNetwork(), loa)){
                     for(Player q : c){
                         if(!q.prefers(c, dup, g.getNetwork(), loa)) {
-                            g.addEntry("The coalition structure is not individually stable.");
                             return false;
                         }
                     }
                 }
             }
         }
-        g.addEntry("The coalition structure is individually stable.");
         this.remove(empty);
         return true;
     }
@@ -207,7 +195,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                                 Coalition e = c.duplicate();
                                 e.remove(g.getPlayer(i));
                                 if (!p.prefers(c, d, g.getNetwork(), loa)) {
-                                    g.addEntry("The coalition structure is not contractually individually stable.");
                                     return false;
                                 }
                             }
@@ -216,7 +203,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                 }
             }
         }
-        g.addEntry("The coalition structure is contractually individually stable.");
         return true;
     }
 
@@ -231,11 +217,9 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             }
         }
         if (countThis > countCmp){
-            g.addEntry("The coalition structure is strictly popular.");
             return true;
         }
         else{
-            g.addEntry("The coalition structure is not strictly popular.");
             return false;
         }
     }
@@ -252,33 +236,48 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             }
         }
         if (countThis >= countCmp){
-            g.addEntry("The coalition structure is popular.");
             return true;
         }
         else{
-            g.addEntry("The coalition structure is not popular.");
             return false;
         }
     }
 
     public boolean coreStable(Game g, LOA loa) throws Exception {
-        if (blockingCoalitions(g, loa).isEmpty()){
-            g.addEntry("The coalition structure is core stable.");
-            return true;
-        }
+        HashSet<Coalition> blockers = blockingCoalitions(g, loa);
+
+        if (blockers.isEmpty()) return true;
         else{
-            g.addEntry("The coalition structure is not core stable.");
+            String str = "";
+            for (Coalition b : blockers){
+                for (Player p : b){
+                    str = str.concat(p.getName());
+                    str = str.concat(", ");
+                }
+
+                g.addEntry("The coalition containing " + str + " blocks.");
+                break;
+            }
             return false;
         }
     }
 
     public boolean strictlyCoreStable(Game g, LOA loa) throws Exception {
-        if(weaklyBlockingCoalitions(g, loa).isEmpty()){
-            g.addEntry("The coalition structure is strictly core stable.");
+        HashSet<Coalition> weakBlockers = weaklyBlockingCoalitions(g, loa);
+        if(weakBlockers.isEmpty()){
             return true;
         }
         else {
-            g.addEntry("The coalition structure is not strictly core stable.");
+            String str = "";
+            for (Coalition b : weakBlockers){
+                for (Player p : b){
+                    str = str.concat(p.getName());
+                    str = str.concat(", ");
+                }
+
+                g.addEntry("The coalition containing " + str + " blocks weakly.");
+                break;
+            }
             return false;
         }
     }
@@ -291,12 +290,10 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             for (int j = 0; j < this.size(); j++){
                 Coalition c = this.get(i);
                 if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) {
-                    g.addEntry("The coalition structure is not perfect.");
                     return false;
                 }
             }
         }
-        g.addEntry("The coalition structure is perfect.");
         return true;
     }
 }

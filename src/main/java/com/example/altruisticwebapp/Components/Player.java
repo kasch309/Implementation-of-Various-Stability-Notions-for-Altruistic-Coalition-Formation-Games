@@ -44,15 +44,6 @@ public class Player {
         onlyPlayer.add(this);
         return this.weaklyPrefers(c, onlyPlayer, nw, loa);
     }
-
-    public boolean weaklyPrefers(Coalition a, Coalition b, NetworkOfFriends nw) {
-        return a.value(this, nw) >= b.value(this, nw);
-    }
-
-    public boolean prefers(Coalition a, Coalition b, NetworkOfFriends nw){
-        return a.value(this, nw) > b.value(this, nw);
-    }
-
     public boolean areFriends(Player p, NetworkOfFriends nw){
         return (nw.getMatrix()[this.getKey()][p.getKey()] == 1);
     }
@@ -61,7 +52,7 @@ public class Player {
         return (nw.getMatrix()[this.key][p.getKey()] == 0);
     }
 
-    public double utilitySFavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
+    public double utilitySFavg(Coalition a, NetworkOfFriends nw){
         //u_i^SFavg = M * value(Player i, Coalition A) + avg(Player i, Friends F, Coalition A)
 
         int M = (int) Math.pow(nw.getSize(), 2); //M >= n*n
@@ -101,7 +92,7 @@ public class Player {
     }
 
     public double utilityETmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
+        if (a == null) throw new CoalitionIsNullException(a);
 
         double utility = 0;
         utility = a.minPlus(this, nw);
@@ -109,9 +100,10 @@ public class Player {
     }
 
     public double utilityATmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
+        if (a == null) throw new CoalitionIsNullException(a);
 
-        int M = (int) Math.pow(nw.getSize(), 3);        double utility = 0;
+        int M = (int) Math.pow(nw.getSize(), 3);
+        double utility = 0;
         utility = a.value(this, nw) + M * a.min(this, nw);
         return utility;
     }

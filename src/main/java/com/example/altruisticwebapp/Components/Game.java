@@ -27,6 +27,9 @@ public class Game {
     public Log getLog(){
         return log.output();
     }
+    public void clearLog(){
+        this.log = new Log();
+    }
     public void addEntry(String str){
         this.log.addEntry(str);
     }
@@ -95,5 +98,64 @@ public class Game {
         }
         allInOne.addCoalition(c);
         return allInOne;
+    }
+
+    public void log(logStr str){
+        switch (str) {
+            case IR -> {
+                log.addEntry("This coalition structure is individually rational.");
+            }
+            case notIR -> {
+                log.addEntry("This coalition structure is not individually rational.");
+            }
+            case Nash -> {
+                log.addEntry("This coalition structure is Nash stable.");
+            }
+            case notNash -> {
+                log.addEntry("This coalition structure is not Nash stable.");
+            }
+            case IS -> {
+                log.addEntry("This coalition structure is individually stable.");
+            }
+            case notIS -> {
+                log.addEntry("This coalition structure is not individually stable.");
+            }
+            case CIS -> {
+                log.addEntry("This coalition structure is contractually individually stable.");
+            }
+            case notCIS -> {
+                log.addEntry("This coalition structure is not contractually individually stable.");
+            }
+            case CS -> {
+                log.addEntry("This coalition structure is core stable.");
+            }
+            case notCS -> {
+                log.addEntry("This coalition structure is not core stable.");
+            }
+            case SCS -> {
+                log.addEntry("This coalition structure is strictly stable.");
+            }
+            case notSCS -> {
+                log.addEntry("This coalition structure is not strictly core stable.");
+            }
+            case P -> {
+                log.addEntry("This coalition structure is popular");
+            }
+            case notP -> {
+                log.addEntry("This coalition structure is not popular.");
+            }
+            case SP -> {
+                log.addEntry("This coalition structure is strictly popular.");
+            }
+            case notSP -> {
+                log.addEntry("This coalition structure is not strictly popular.");
+            }
+            case Perf -> {
+                log.addEntry("This coalition structure is perfect.");
+            }
+            case notPerf -> {
+                log.addEntry("This coalition structure is not perfect.");
+            }
+        }
     }
 }

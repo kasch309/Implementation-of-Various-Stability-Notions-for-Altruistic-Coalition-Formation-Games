@@ -14,15 +14,14 @@ public class Controller {
 
     Game g;
     CoalitionStructure cs;
-
-    CoalitionStructure cscontruct;
+    boolean coalchart = false;
+    CoalitionStructure csconstruct = new CoalitionStructure();
     String re = "redirect:";
     Result res = new Result();
 
     public Controller() {
         cs = new CoalitionStructure();
         g = new Game(5);
-
     }
 
     @GetMapping("/")
@@ -30,18 +29,37 @@ public class Controller {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
+        model.addAttribute("coalchart", coalchart);
         return "home";
+    }
+
+    @PostMapping("/home/changeGraph")
+    public String ChangeGraph(@RequestParam("coalchart") String newCoalChart) {
+        if (newCoalChart.equals("false"))
+            coalchart = false;
+        if (newCoalChart.equals("true"))
+            coalchart = true;
+        return "redirect:/";
     }
 
     @GetMapping("/construction")
     public String construction(Model model) throws NoPlayerSetAssignedException, NoNetworkAssignedException {
-        g.getLog().clear();
         model.addAttribute("log", g.getLog());
         model.addAttribute("player_set", g.getPlayers());
-        model.addAttribute("coalition_structure", cs);
+        model.addAttribute("coalition_structure", csconstruct);
         model.addAttribute("friendMatrix", g.getNetwork());
         model.addAttribute("result", res);
+        model.addAttribute("coalchart", coalchart);
         return "construction";
+    }
+
+    @PostMapping("/construction/changeGraph")
+    public String constChangeGraph(@RequestParam("coalchart") String newCoalChart) {
+        if (newCoalChart.equals("false"))
+            coalchart = false;
+        if (newCoalChart.equals("true"))
+            coalchart = true;
+        return "redirect:/construction";
     }
 
     @PostMapping("/addPlayer")
@@ -86,7 +104,7 @@ public class Controller {
 
     @PostMapping("/addPlayerToCoalition")
     public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") int coal)
-            throws NoPlayerSetAssignedException {
+            throws NoPlayerSetAssignedException, PlayerNotFoundException {
         cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
         cs.getCoalition(coal).add(g.getPlayer(key));
         return re;
@@ -117,9 +135,7 @@ public class Controller {
 
     @GetMapping("/analysis")
     public String analysis(Model model)
-            throws NoPlayerSetAssignedException, NoNetworkAssignedException {
-        g.getLog().clear();
-
+            throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
@@ -127,7 +143,18 @@ public class Controller {
         model.addAttribute("weakly_blocking_coalitions", new HashSet<Coalition>());
         model.addAttribute("log", g.getLog());
         model.addAttribute("result", res);
+        model.addAttribute("coalchart", coalchart);
         return "analysis";
+    }
+
+    @PostMapping("analysis/changeGraph")
+    public String analysisChangeGraph(@RequestParam("coalchart") String newCoalChart) {
+        if (newCoalChart.equals("false"))
+            coalchart = false;
+        if (newCoalChart.equals("true"))
+            coalchart = true;
+        return "redirect:/analysis";
+
     }
 
     @PostMapping("/analysis/check")
@@ -150,13 +177,6 @@ public class Controller {
             System.out.println(g.getPlayer(i).getKey());
         }
         LOA loa = LOA.stringToEnum(valueBase, treatment);
-
-        /*
-         * levelOfAltruism is returned as either "average" or "minimum"
-         * treatment is returned as either "selfish_first","equal_treatment" or
-         * "altruistic_treatment"
-         */
-
         if (perfect && !res.perfect) {
             if (cs.perfect(g, loa)) {
                 res.perfect = true;
@@ -168,20 +188,39 @@ public class Controller {
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
                 res.coreStable = true;
+                g.log(logStr.Perf);
+                g.log(logStr.SP);
+                g.log(logStr.P);
+                g.log(logStr.SCS);
+                g.log(logStr.CS);
+                g.log(logStr.Nash);
+                g.log(logStr.IS);
+                g.log(logStr.CIS);
+                g.log(logStr.IR);
+
+
             }
+            else g.log(logStr.notPerf);
         }
         if (strictlyPopular && !res.strictlyPopular) {
             if (cs.strictlyPopular(g, loa)) {
                 res.strictlyPopular = true;
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
+                g.log(logStr.SP);
+                g.log(logStr.P);
+                g.log(logStr.CIS);
             }
+            else g.log(logStr.notSP);
         }
         if (popular && !res.popular) {
             if (cs.popular(g, loa)) {
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
+                g.log(logStr.P);
+                g.log(logStr.CIS);
             }
+            else g.log(logStr.notP);
         }
         if (strictlyCoreStable && !res.strictlyCoreStable) {
             if (cs.strictlyCoreStable(g, loa)) {
@@ -190,7 +229,13 @@ public class Controller {
                 res.individuallyStable = true;
                 res.individuallyRational = true;
                 res.coreStable = true;
+                g.log(logStr.SCS);
+                g.log(logStr.CIS);
+                g.log(logStr.IS);
+                g.log(logStr.IR);
+                g.log(logStr.CS);
             }
+            else g.log(logStr.notSCS);
         }
         if (nashStable && !res.nashStable) {
             if (cs.nashStable(g, loa)) {
@@ -198,28 +243,43 @@ public class Controller {
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
+                g.log(logStr.Nash);
+                g.log(logStr.IS);
+                g.log(logStr.CIS);
+                g.log(logStr.IR);
             }
+            else g.log(logStr.notNash);
         }
         if (individuallyStable && !res.individuallyStable) {
             if (cs.individuallyStable(g, loa)) {
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
+                g.log(logStr.IS);
+                g.log(logStr.CIS);
+                g.log(logStr.IR);
             }
+            else g.log(logStr.notIS);
         }
         if (coreStable && !res.coreStable) {
             if (cs.coreStable(g, loa)) {
                 res.coreStable = true;
                 res.individuallyRational = true;
+                g.log(logStr.CS);
+                g.log(logStr.IR);
             }
+            else g.log(logStr.notCS);
         }
         if (contractuallyIndividuallyStable && !res.contractuallyIndividuallyStable) {
             res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g, loa);
+            if (res.contractuallyIndividuallyStable) g.log(logStr.CIS);
+            else g.log(logStr.notCIS);
         }
         if (individuallyRational && !res.individuallyRational) {
             res.individuallyRational = cs.individuallyRational(g, loa);
+            if (res.individuallyRational) g.log(logStr.IR);
+            else g.log(logStr.notIR);
         }
-
         return "redirect:/analysis";
     }
 
@@ -275,11 +335,29 @@ public class Controller {
                 if (!csAll.perfect(g, loa))
                     continue;
             }
-            this.cs = csAll;
+            this.csconstruct = csAll;
             g.addEntry("The coalition structure generated fulfilled the requirements.");
             return "redirect:/construction";
         }
         g.addEntry("There exists no coalition structure fulfilling the requirements.");
+        return "redirect:/construction";
+    }
+
+    @PostMapping("/construction/overwritecs")
+    public String overwriteCs(){
+        cs = csconstruct;
+        return "redirect:/construction";
+    }
+
+    @PostMapping("/analysis/resetlog")
+    public String resetLogA(){
+        g.clearLog();
+        return "redirect:/analysis";
+    }
+
+    @PostMapping("/construction/resetlog")
+    public String resetLogC(){
+        g.clearLog();
         return "redirect:/construction";
     }
 
