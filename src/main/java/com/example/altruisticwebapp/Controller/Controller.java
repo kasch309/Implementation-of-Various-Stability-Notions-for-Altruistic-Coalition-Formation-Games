@@ -361,4 +361,9 @@ public class Controller {
         return "redirect:/construction";
     }
 
+    @PostMapping("/")
+    public void terminate(){
+        System.exit(0);
+    }
+
 }
