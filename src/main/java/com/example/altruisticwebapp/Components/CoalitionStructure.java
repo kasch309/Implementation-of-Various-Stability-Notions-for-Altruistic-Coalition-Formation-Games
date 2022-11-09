@@ -282,15 +282,18 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         }
     }
 
-    public boolean perfect(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    public boolean perfect(Game g, LOA loa) throws Exception {
 
         // i prefers own coalition over any other possible one
+        HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
 
-        for (int i = 0; i < g.getSize(); i++){
-            for (int j = 0; j < this.size(); j++){
-                Coalition c = this.get(i);
-                if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) {
-                    return false;
+        for (CoalitionStructure cs : all){
+            for (int i = 0; i < g.getSize(); i++){
+                for (int j = 0; j < cs.size(); j++){
+                    Coalition c = cs.get(i);
+                    if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) {
+                        return false;
+                    }
                 }
             }
         }

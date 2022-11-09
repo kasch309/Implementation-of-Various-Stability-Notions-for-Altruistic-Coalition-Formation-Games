@@ -20,12 +20,12 @@
         .listContainer {
             padding: 1rem;
             border-radius: 0.5rem;
-            border: solid 2px gray;
+            border: solid 2px lightskyblue;
             margin-bottom: 2rem;
             position: relative;
             max-height: 12rem;
             overflow-y: scroll;
-            background: lightgray;
+            background: white;
         }
     </style>
     <title>AHG</title>
@@ -95,9 +95,10 @@
                             placeholder="Player name"
                     />
                     <button
-                            class="btn btn-primary"
+                            class="btn"
                             type="submit"
                             id="button-addon"
+                            style="background-color: lightskyblue"
                     >
                         Add
                     </button>
@@ -226,7 +227,11 @@
             </div>
             <form method="post" th:action="@{/addCoalition}">
                 <div class="input-group" style="margin-bottom: 2rem">
-                    <button class="btn btn-primary" type="submit">
+                    <button
+                            class="btn"
+                            style="background-color: lightskyblue"
+                            type="submit"
+                    >
                         Add Coalition
                     </button>
                 </div>
@@ -306,9 +311,13 @@
             <div>
                 <form th:action="@{/resetGame}">
                     <button
-                            class="btn btn-primary"
+                            class="btn"
                             type="submit"
-                            style="bottom: 2rem; position: fixed"
+                            style="
+                                    bottom: 2rem;
+                                    position: fixed;
+                                    background-color: lightskyblue;
+                                "
                     >
                         Reset game
                     </button>
@@ -334,7 +343,6 @@
                                 border: solid 3px lightskyblue;
                                 border-bottom: 0px;
                                 height: 33.5rem;
-                                margin-top: 2rem;
                             "
                 >
                     <script
@@ -412,7 +420,6 @@
                                 border: solid 3px lightskyblue;
                                 border-bottom: 0px;
                                 height: 33.5rem;
-                                margin-top: 2rem;
                             "
                 >
                     <script
@@ -591,27 +598,8 @@
                 </div>
             </form>
         </div>
-        <div>
-            <form th:action="@{/analysis}">
-                <button
-                        class="btn btn-primary"
-                        type="submit"
-                        style="bottom: 2rem; right: 5rem; position: fixed"
-                >
-                    Analysis
-                </button>
-            </form>
-            <form th:action="@{/construction}">
-                <button
-                        class="btn btn-primary"
-                        type="submit"
-                        style="bottom: 2rem; right: 13rem; position: fixed"
-                >
-                    Construction
-                </button>
-            </form>
+
         </div>
     </div>
-</div>
 </body>
 </html>

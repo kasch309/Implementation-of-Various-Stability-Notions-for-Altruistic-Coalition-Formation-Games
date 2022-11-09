@@ -33,35 +33,54 @@ class PlayerSetTest {
     void generateTimeTest5() throws Exception {
         PlayerSet ps = new PlayerSet(5);
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
+        for (CoalitionStructure struct : cs){
+            for (int i = 0; i < struct.size(); i++){
+                assertNotNull(struct.get(i));
+            }
+        }
     }
     @Test
     void generateTimeTest6() throws Exception {
         PlayerSet ps = new PlayerSet(6);
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
+        for (CoalitionStructure struct : cs){
+            for (int i = 0; i < struct.size(); i++){
+                assertNotNull(struct.get(i));
+            }
+        }
     }
 
     @Test
     void generateTimeTest7() throws Exception {
         PlayerSet ps = new PlayerSet(7);
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
+        for (CoalitionStructure struct : cs){
+            for (int i = 0; i < struct.size(); i++){
+                assertNotNull(struct.get(i));
+            }
+        }
     }
 
     @Test
     void generateTimeTest8() throws Exception {
         PlayerSet ps = new PlayerSet(8);
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
+        for (CoalitionStructure struct : cs){
+            for (int i = 0; i < struct.size(); i++){
+                assertNotNull(struct.get(i));
+            }
+        }
     }
 
     @Test
     void generateTimeTest9() throws Exception {
         PlayerSet ps = new PlayerSet(9);
         HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
-    }
-
-    @Test
-    void generateTimeTest10() throws Exception {
-        PlayerSet ps = new PlayerSet(10);
-        HashSet<CoalitionStructure> cs = ps.generateCoalitionStructures();
+        for (CoalitionStructure struct : cs){
+            for (int i = 0; i < struct.size(); i++){
+                assertNotNull(struct.get(i));
+            }
+        }
     }
 
     @Test

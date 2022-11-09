@@ -52,26 +52,23 @@ public class Player {
         return (nw.getMatrix()[this.key][p.getKey()] == 0);
     }
 
-    public double utilitySFavg(Coalition a, NetworkOfFriends nw){
+    public double utilitySFavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = M * value(Player i, Coalition A) + avg(Player i, Friends F, Coalition A)
-
+        if (a == null) throw new CoalitionIsNullException(a);
         int M = (int) Math.pow(nw.getSize(), 2); //M >= n*n
-        double utility = 0;
-        utility = M * a.value(this, nw);
-        utility += a.avg(this, nw);
-        return utility;
+        return M * a.value(this, nw) +a.avg(this, nw);
     }
 
     public double utilityETavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = avgPlus(Player i, Friends F, Coalition A)
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
+        if (a == null) throw new CoalitionIsNullException(a);
         return a.avgPlus(this, nw);
         //don't NEED this method but for readability purposes maybe not that bad, can be easily removed
     }
 
     public double utilityATavg(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //u_i^SFavg = value(Player i, Coalition A) + M*avg(Player i, Friends F, Coalition A)
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
+        if (a == null) throw new CoalitionIsNullException(a);
 
         int M = (int) Math.pow(nw.getSize(), 2); //M >= n*n, Degree of altruism?
         double utility = 0;
@@ -83,7 +80,7 @@ public class Player {
 
     public double utilitySFmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //min of values that friends give coalition
-        if (a.equals(null)) throw new CoalitionIsNullException(a);
+        if (a == null) throw new CoalitionIsNullException(a);
 
         int M = (int) Math.pow(nw.getSize(), 3);
         double utility = 0;

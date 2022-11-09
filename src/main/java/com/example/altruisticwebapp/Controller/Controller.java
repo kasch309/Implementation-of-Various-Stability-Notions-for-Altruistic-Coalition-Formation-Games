@@ -119,6 +119,10 @@ public class Controller {
 
     @PostMapping("/removeCoalitionFromCoalitionStructure")
     public String removeCoalitionFromCoalitionStructure(@RequestParam("coalitionRemove") int key) {
+        if (cs.size() == 1) {
+            cs = new CoalitionStructure();
+            return re;
+        }
         cs.removeCoalition(key);
         return re;
     }
@@ -336,7 +340,7 @@ public class Controller {
                     continue;
             }
             this.csconstruct = csAll;
-            g.addEntry("The coalition structure generated fulfilled the requirements.");
+            g.addEntry("The coalition structure generated fulfilled the requirements. If you want to check for other stability concepts for this coalition structure, click the button below and use the Analysis tab.");
             return "redirect:/construction";
         }
         g.addEntry("There exists no coalition structure fulfilling the requirements.");

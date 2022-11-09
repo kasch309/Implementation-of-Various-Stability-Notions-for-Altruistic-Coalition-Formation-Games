@@ -15,13 +15,15 @@
     <style>
         .list {
             padding: 1rem;
-            border: solid 3px gray;
+            border: solid 3px lightskyblue;
             border-radius: 1rem;
             margin-bottom: 2rem;
             margin-top: 2rem;
             position: relative;
             height: 36rem;
-            max-height: 36rem;
+        }
+        .list-group {
+            max-height: 28rem;
             overflow-y: scroll;
         }
     </style>
@@ -78,7 +80,8 @@
     <div class="row">
         <div class="col">
             <div class="list">
-                <h5>Level of altruism</h5>
+                <h5>Level of altruism:</h5>
+                <form id="usecs" name="usecs" th:action="@{/construction/overwritecs}" method="post"></form>
                 <form th:action="@{/construct/build}" method="post">
                     <div class="btn-group" style="display: flex">
                         <input
@@ -112,7 +115,6 @@
                     <div
                             class="btn-group"
                             aria-label="Basic radio toggle button group"
-                            style="margin-top: 1rem"
                     >
                         <input
                                 type="radio"
@@ -158,13 +160,8 @@
                         >Altruistic Treatment
                         </label>
                     </div>
-                    <label
-                            style="
-                                    display: flex;
-                                    align-items: center;
-                                    margin-top: 1rem;
-                                "
-                    >
+                    <h5 style="margin-top: 1rem">Build with:</h5>
+                    <label style="display: flex; align-items: center">
                         <input
                                 class="form-check-input mt-0"
                                 type="checkbox"
@@ -260,19 +257,34 @@
                         />
                         <span style="margin-left: 0.2rem">Perfect</span>
                     </label>
+                    <span style="font-size: 0.6rem; color: grey">Some stability concepts imply each other. When choosing one, the implied concepts will be shown in the log as well.</span>
+
                     <div
                             style="
                                     display: flex;
-                                    justify-content: center;
+                                    justify-content: space-evenly;
                                     align-items: flex-end;
-                                    margin-top: 2rem;
+                                    margin-top: 1rem;
                                 "
                     >
-                        <button type="submit" class="btn btn-primary">
+                        <button
+                                type="submit"
+                                class="btn"
+                                style="background-color: lightskyblue"
+                        >
                             Construct
+                        </button>
+                        <button
+                                form="usecs"
+                                type="submit"
+                                class="btn"
+                                style="background-color: lightskyblue"
+                        >
+                            Use
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
 
@@ -495,6 +507,24 @@
 
         <div class="col">
             <div class="list">
+                <div
+                        style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: baseline;
+                                margin-bottom: 1rem;
+                            "
+                >
+                    <h5>Log:</h5>
+                    <form
+                            th:action="@{/construction/resetlog}"
+                            method="post"
+                    >
+                        <button class="btn btn-danger">
+                            Clear log
+                        </button>
+                    </form>
+                </div>
                 <ul class="list-group">
                     <li
                             th:each="entry: ${log}"
@@ -506,12 +536,6 @@
             </div>
         </div>
     </div>
-    <span
-            th:if="${result.individuallyRational}"
-            class="alert alert-success"
-            role="alert"
-    >Blockers
-            </span>
 </div>
 </body>
 </html>
