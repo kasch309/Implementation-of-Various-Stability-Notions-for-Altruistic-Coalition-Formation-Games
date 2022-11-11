@@ -78,6 +78,9 @@
                 >
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="/resetGame" style="color: darkred">Reset game</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="/terminate" style="color: darkred">Terminate</a>
             </li>
         </ul>
@@ -314,21 +317,8 @@
                     </form>
                 </div>
             </div>
-            <div>
-                <form th:action="@{/resetGame}">
-                    <button
-                            class="btn"
-                            type="submit"
-                            style="
-                                    bottom: 2rem;
-                                    position: fixed;
-                                    background-color: lightskyblue;
-                                "
-                    >
-                        Reset game
-                    </button>
-                </form>
-            </div>
+            <span style="color: grey; font-size: 0.6rem; margin-top: 2rem">Coalition names are set after indexes in the data structure. Use the visualization on the right to see which coalition is which.</span>
+
         </div>
         <div class="col-8">
             <script src="https://code.highcharts.com/highcharts.js"></script>

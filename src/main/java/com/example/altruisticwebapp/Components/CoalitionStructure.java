@@ -10,6 +10,12 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
     public CoalitionStructure(){
     }
+
+    public void fixNames(){
+        for (int i = 0; i < this.size(); i++){
+            get(i).setName("Coalition " + i);
+        }
+    }
     public void addCoalition(Coalition c){
         c.setKey(this.size());
         c.setName("Coalition " + c.getKey());
@@ -17,6 +23,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         for (int i = 0; i<this.size(); i++){
             System.out.println(this.get(i).getName());
         }
+        fixNames();
 
     }
 
@@ -51,6 +58,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
             d.setKey(i-1);
             put(i-1, d);
         }
+        fixNames();
     }
 
     public Coalition getPlayersCoalition(Player p) {
