@@ -31,7 +31,7 @@ class CoalitionStructureTest {
         cs.addCoalition(c);
         cs.addCoalition(d);
         cs.get(0).add(g.getPlayer(0));
-        g.removePlayer(g.getPlayer(2));
+        g.removePlayer(g.getPlayer(2), cs);
         g.addPlayer("new player");
 
     }
@@ -77,11 +77,45 @@ class CoalitionStructureTest {
     }
 
     @Test
-    void individuallyStable() throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+    void individuallyStable() throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException, CoalitionIsNullException, InvalidLevelOfAltruismException {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(2, 3);
+        g.getNetwork().addFriendship(3, 4);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c1 = new Coalition();
+        c1.add(g.getPlayer(0));
+        c1.add(g.getPlayer(1));
+        Coalition c2 = new Coalition();
+        c2.add((g.getPlayer(2)));
+        c2.add(g.getPlayer(3));
+        c2.add(g.getPlayer(4));
+        Coalition c3 = new Coalition();
+        cs.addCoalition(c1);
+        cs.addCoalition(c2);
+        cs.addCoalition(c3);
+        assertTrue(cs.individuallyStable(g, LOA.ETavg));
     }
 
     @Test
-    void contractuallyIndividuallyStable() {
+    void contractuallyIndividuallyStable() throws NoNetworkAssignedException, PlayerNotFoundException, CoalitionIsNullException, InvalidLevelOfAltruismException, NoPlayerSetAssignedException {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(2, 3);
+        g.getNetwork().addFriendship(3, 4);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c1 = new Coalition();
+        c1.add(g.getPlayer(0));
+        c1.add(g.getPlayer(1));
+        Coalition c2 = new Coalition();
+        c2.add((g.getPlayer(2)));
+        c2.add(g.getPlayer(3));
+        c2.add(g.getPlayer(4));
+        Coalition c3 = new Coalition();
+        cs.addCoalition(c1);
+        cs.addCoalition(c2);
+        cs.addCoalition(c3);
+        assertTrue(cs.contractuallyIndividuallyStable(g, LOA.ETavg));
     }
 
     @Test
@@ -101,7 +135,27 @@ class CoalitionStructureTest {
     }
 
     @Test
-    void perfect() {
+    void perfect() throws Exception {
+        Game g = new Game(4);
+        CoalitionStructure cs = new CoalitionStructure();
+        cs.addCoalition(new Coalition());
+        cs.get(0).add(g.getPlayer(0));
+        cs.addCoalition(new Coalition());
+        cs.get(1).add(g.getPlayer(1));
+        cs.addCoalition(new Coalition());
+        cs.get(2).add(g.getPlayer(2));
+        cs.addCoalition(new Coalition());
+        cs.get(3).add(g.getPlayer(3));
+        for (int i = 0; i < 4; i++){
+            System.out.println("Player " + i + ":");
+            for (int j = 0; j < 4; j++){
+                System.out.println("  Coalition " + j + ":");
+                System.out.println("    UtilitySFavg: " + g.getPlayer(i).utilitySFavg(cs.get(j), g.getNetwork()));
+                System.out.println("    UtilityEQavg: " + g.getPlayer(i).utilityETavg(cs.get(j), g.getNetwork()));
+                System.out.println("    UtilityALavg: " + g.getPlayer(i).utilityATavg(cs.get(j), g.getNetwork()));
+            }
+        }
+        assertTrue(cs.perfect(g, LOA.ETavg));
     }
 
     @Test

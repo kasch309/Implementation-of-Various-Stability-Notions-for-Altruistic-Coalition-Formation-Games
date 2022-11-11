@@ -4,6 +4,7 @@ import com.example.altruisticwebapp.Components.*;
 import com.example.altruisticwebapp.Exceptions.*;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -98,7 +99,7 @@ public class Controller {
 
     @PostMapping("/removePlayerFromGame")
     public String removePlayerFromGame(@RequestParam("playerRemove") int key) throws NoPlayerSetAssignedException {
-        g.removePlayer(g.getPlayer(key));
+        g.removePlayer(g.getPlayer(key), cs);
         return re;
     }
 
@@ -365,7 +366,7 @@ public class Controller {
         return "redirect:/construction";
     }
 
-    @PostMapping("/")
+    @GetMapping("/terminate")
     public void terminate(){
         System.exit(0);
     }

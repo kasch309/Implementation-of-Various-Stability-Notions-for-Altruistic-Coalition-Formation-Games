@@ -21,8 +21,11 @@ public class Game {
         this.nw = new NetworkOfFriends(ps);
     }
 
-    public void removePlayer(Player p){
+    public void removePlayer(Player p, CoalitionStructure cs){
         ps.removePlayer(p, nw);
+        for (int i = 0; i < cs.size(); i++){
+            cs.get(i).remove(p);
+        }
     }
     public Log getLog(){
         return log.output();
@@ -100,6 +103,9 @@ public class Game {
         return allInOne;
     }
 
+    public void log (String str){
+        log.addEntry(str);
+    }
     public void log(logStr str){
         switch (str) {
             case IR -> {

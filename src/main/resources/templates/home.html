@@ -77,9 +77,15 @@
                 >Construction</a
                 >
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/terminate" style="color: darkred">Terminate</a>
+            </li>
         </ul>
     </div>
 </nav>
+<div style="margin-top: 2rem" th:if="${player_set.size() > 7}" class="alert alert-danger" role="alert">
+    For more than 7 players the runtime of analyzing and constructing methods inscreases dramatically.
+</div>
 
 <div class="container" style="margin-top: 2rem">
     <div class="row">
@@ -601,5 +607,6 @@
 
         </div>
     </div>
+
 </body>
 </html>

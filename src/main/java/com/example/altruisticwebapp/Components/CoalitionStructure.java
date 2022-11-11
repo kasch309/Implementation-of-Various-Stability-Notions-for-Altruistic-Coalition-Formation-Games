@@ -13,13 +13,22 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     public void addCoalition(Coalition c){
         c.setKey(this.size());
         c.setName("Coalition " + c.getKey());
-        System.out.println("Coalition: " + c.getName() + " added.");
-        System.out.println("---");
         this.put(this.size(), c);
         for (int i = 0; i<this.size(); i++){
             System.out.println(this.get(i).getName());
         }
 
+    }
+
+    public CoalitionStructure duplicate(CoalitionStructure cs){
+        CoalitionStructure dos = new CoalitionStructure();
+        for (int i = 0; i < cs.size(); i++){
+            dos.addCoalition(new Coalition());
+            for (int j = 0; j < cs.get(i).size(); j++){
+                dos.get(i).add(cs.get(j));
+            }
+        }
+        return dos;
     }
 
     public Coalition getCoalition(int key){
@@ -45,19 +54,11 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     }
 
     public Coalition getPlayersCoalition(Player p) {
-        for (int i = 0; i < this.size(); i++){
+        for (int i = 0; i < this.size(); i++) {
             Coalition c = this.get(i);
             if (c.contains(p)) return c;
         }
         return null;
-    }
-
-    public int getPlayersCoalitionKey(Player p){
-        for (int i = 0; i < this.size(); i++){
-            Coalition c = this.get(i);
-            if (c.contains(p)) return i;
-        }
-        return -1;
     }
 
     public HashSet<Coalition> blockingCoalitions(Game g, LOA loa) throws Exception {
@@ -128,17 +129,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
     public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         // For all players i their own coalition is weakly preferred to any other, if it would contain i additionally
-        CoalitionStructure test = (CoalitionStructure) this.clone();
-        Coalition empty = new Coalition("empty nash");
+        CoalitionStructure test = duplicate(this);
+        Coalition empty = new Coalition();
         test.addCoalition(empty);
-        for (int i = 0; i < g.getSize(); i++){
-            for (int j = 0; j < test.size(); j++){
-                Coalition c = test.get(j);
-                Coalition d = c.duplicate();
-                d.add(g.getPlayer(i));
-                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
-                    return false;
-                }
+        for (int piterator = 0; piterator < g.getSize(); piterator++){ //Player iterator i
+            for (int citerator = 0; citerator < test.size(); citerator++){ //Coalition iterator j
+                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
+                if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) return false;
+                //Check if each player prefers the coalition he is on over each other one if it would contiain him.
             }
         }
         return true;
@@ -150,26 +148,26 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
         contains them too or there is a player j who prefers c if it contains i too
         */
-        CoalitionStructure test = (CoalitionStructure) this.clone();
-        Coalition empty = new Coalition("empty indivStable");
+
+        CoalitionStructure test = duplicate(this);
+        Coalition empty = new Coalition();
         test.addCoalition(empty);
-        for (int i = 0; i < g.getSize(); i++){
-            Player p = g.getPlayer(i);
-            for (int j = 0; j < test.size(); j++){
-                Coalition c = test.get(j);
-                if (test.getPlayersCoalition(p).equals(c)) continue;
-                Coalition dup = c.duplicate();
-                dup.add(p);
-                if (!p.weaklyPrefers(c, dup, g.getNetwork(), loa)){
-                    for(Player q : c){
-                        if(!q.prefers(c, dup, g.getNetwork(), loa)) {
-                            return false;
-                        }
+        for (int piterator = 0; piterator < g.getSize(); piterator++) { //Player iterator
+            for (int citerator = 0; citerator < test.size(); citerator++) { //Coalition iterator
+                Coalition comp = test.get(citerator);
+                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
+                if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(test.get(citerator)))continue;
+                if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) {
+                    //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
+                    boolean thereis = false;
+                    for (Player p : comp) {
+                        if (thereis) break;
+                        if (p.prefers(comp, test.get(citerator), g.getNetwork(), loa)) thereis = true;
                     }
+                    if (!thereis) return false;
                 }
             }
         }
-        this.remove(empty);
         return true;
     }
 
@@ -180,24 +178,34 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         contains them too or there is a player j who prefers c if it contains i too OR there is player k, i != k, k
         is in coalition of i, k prefers coalition of i over coalition of i if it would not contain i
         */
-        CoalitionStructure test = (CoalitionStructure) this.clone();
-        Coalition empty = new Coalition("empty cis");
+        CoalitionStructure test = duplicate(this);
+        Coalition empty = new Coalition();
         test.addCoalition(empty);
-        for (int i = 0; i < g.getSize(); i++){
-            for (int j = 0; j < this.size(); j++){
-                Coalition c = test.get(j);
-                Coalition d = c.duplicate();
-                d.add(g.getPlayer(i));
-                if (!g.getPlayer(i).weaklyPrefers(getPlayersCoalition(g.getPlayer(i)), d, g.getNetwork(), loa)){
-                    for (int k = 0; k < g.getSize(); k++){
-                        if (!g.getPlayer(k).prefers(c, d, g.getNetwork(), loa)){
-                            for (Player p : this.getPlayersCoalition(g.getPlayer(i))){
-                                Coalition e = c.duplicate();
-                                e.remove(g.getPlayer(i));
-                                if (!p.prefers(c, d, g.getNetwork(), loa)) {
-                                    return false;
-                                }
-                            }
+        for (int piterator = 0; piterator < g.getSize(); piterator++) { //Player iterator
+            for (int citerator = 0; citerator < test.size(); citerator++) { //Coalition iterator
+                Coalition comp = test.get(citerator);
+                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
+                if (!g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) {
+                    if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(test.get(citerator)))continue;
+                    //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
+                    boolean thereis = false;
+                    for (Player p : comp) {
+                        if (thereis) break;
+                        if (p.prefers(comp, test.get(citerator), g.getNetwork(), loa)) thereis = true;
+                    }
+                    if (!thereis){
+                        Coalition withoutPlayer = this.getPlayersCoalition(g.getPlayer(piterator)).duplicate();
+                        withoutPlayer.remove(g.getPlayer(piterator));
+                        if (withoutPlayer.contains(g.getPlayer(piterator))) g.log("Player still inside.");
+                        for (Player p : this.getPlayersCoalition(g.getPlayer(piterator))){
+                            if (thereis) break;
+                            if (p.equals(g.getPlayer(piterator))) continue;
+                            if (p.prefers(this.getPlayersCoalition(g.getPlayer(piterator)), withoutPlayer, g.getNetwork(), loa))
+                                thereis = true;
+                        }
+                        if (!thereis) {
+                            g.log("No player k found");
+                            return false;
                         }
                     }
                 }
@@ -210,37 +218,34 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
-        for (int i = 0; i < g.getSize(); i++){
-            for (CoalitionStructure cs : all){
-                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) countThis++;
-                else countCmp++;
+        for (CoalitionStructure cs : all){
+            if (!cs.equals(this)){
+                for (int piterator = 0; piterator < g.getSize(); piterator++){
+                    if (g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), cs.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countThis++;
+                    if (g.getPlayer(piterator).prefers(cs.getPlayersCoalition(g.getPlayer(piterator)), this.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countCmp++;
+
+                }
+                if (!(countThis > countCmp)) return false;
             }
         }
-        if (countThis > countCmp){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return true;
     }
 
     public boolean popular(Game g, LOA loa) throws Exception {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
-        for (int i = 0; i < g.getSize(); i++) {
-            for (CoalitionStructure cs : all){
-                if (g.getPlayer(i).prefers(this.getPlayersCoalition(g.getPlayer(i)), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa))
-                    countThis++;
-                else countCmp++;
+        for (CoalitionStructure cs : all){
+            if (!cs.equals(this)){
+                for (int piterator = 0; piterator < g.getSize(); piterator++){
+                    if (g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), cs.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countThis++;
+                    if (g.getPlayer(piterator).prefers(cs.getPlayersCoalition(g.getPlayer(piterator)), this.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countCmp++;
+
+                }
+                if (!(countThis >= countCmp)) return false;
             }
         }
-        if (countThis >= countCmp){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return true;
     }
 
     public boolean coreStable(Game g, LOA loa) throws Exception {
@@ -290,7 +295,9 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         for (CoalitionStructure cs : all){
             for (int i = 0; i < g.getSize(); i++){
                 for (int j = 0; j < cs.size(); j++){
-                    Coalition c = cs.get(i);
+                    Coalition c = cs.get(j).duplicate();
+                    if (getPlayersCoalition(g.getPlayer(j)) == null) throw new CoalitionIsNullException("Player has no coalition in cs.");
+                    if (c == null) throw new CoalitionIsNullException("Coalition c is null.");
                     if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) {
                         return false;
                     }

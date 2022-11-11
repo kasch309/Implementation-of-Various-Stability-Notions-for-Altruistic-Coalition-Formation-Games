@@ -68,17 +68,18 @@ public class Coalition extends HashSet<Player> {
          */
 
         double sum = 0;
+        if (numberOfFriends(p, nw) == 0) return 0;
         for (Player q : this){
             if (p.areFriends(q, nw)){
                 sum = sum + this.value(q, nw);
             }
         }
-
         return sum / numberOfFriends(p, nw);
     }
 
     public double avgPlus(Player p, NetworkOfFriends nw){ //average friend oriented valuation of p AND p's friends in coalition
         double sum = this.value(p, nw);
+        if (numberOfFriends(p, nw) == 0) return value(p, nw);
         int numberOfFriends = 0;
         for (Player q : this){
             if (p.areFriends(q, nw)){
@@ -109,5 +110,8 @@ public class Coalition extends HashSet<Player> {
         double minVal = min(p, nw);
         if (value(p, nw) < minVal) minVal = value(p, nw);
         return minVal;
+    }
+
+    public void add(Coalition players) {
     }
 }

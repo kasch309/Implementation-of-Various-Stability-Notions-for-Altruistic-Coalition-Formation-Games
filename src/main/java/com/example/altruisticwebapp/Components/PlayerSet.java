@@ -70,7 +70,7 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
         return coalStruc;
     }
 
-    public void splitPlayers(int [] pos, CoalitionStructure cs){
+    public void splitPlayers(int [] pos, CoalitionStructure cs) throws CoalitionIsNullException {
         int largestVal = 0;
         for (int po : pos) {
             if (po > largestVal) largestVal = po;
@@ -83,6 +83,7 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
             c[pos[i]-1].add(get(i));
         }
         for (Coalition players : c) {
+            if (players == null) throw new CoalitionIsNullException("Splitting players created a null coalition.\n");
             cs.addCoalition(players);
         }
     }
