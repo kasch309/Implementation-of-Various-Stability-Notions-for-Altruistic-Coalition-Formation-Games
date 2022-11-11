@@ -60,6 +60,8 @@ public class Game {
             this.ps = new PlayerSet();
         }
         ps.add(p, this.nw);
+        ps.printPlayers();
+
     }
 
     public void addPlayer(String name) throws NoNetworkAssignedException {

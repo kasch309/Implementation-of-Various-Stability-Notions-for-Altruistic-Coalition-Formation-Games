@@ -67,13 +67,20 @@ public class Controller {
     public String addPlayer(@RequestParam("name") String name)
             throws NoPlayerSetAssignedException, NoNetworkAssignedException {
         if (name.equals("")) {
-            name = "Player " + (g.getSize() + 1);
+            for (int i = 0; i < g.getSize(); i++){
+                if (!g.getPlayers().containsPlayerWithName("Player " + i)){
+                    name = "Player " + i;
+                }
+            }
+            if (name.equals("")) name = "Player " + g.getSize();
         }
 
         Player p = new Player(name);
         if (!cs.isEmpty())
             cs.get(0).add(p);
         g.addPlayer(p);
+        System.out.println("Size: " + g.getPlayers().size());
+        g.getPlayers().printPlayers();
 
         return re;
     }
@@ -177,6 +184,7 @@ public class Controller {
             @RequestParam(required = false, value = "perfect") boolean perfect)
             throws Exception {
         res = new Result();
+        System.out.println("Size: " + g.getSize());
         g.getPlayers().printPlayers();
         for (int i = 0; i < g.getSize(); i++) {
             System.out.println(g.getPlayer(i).getKey());

@@ -86,7 +86,6 @@ public class NetworkOfFriends{
 
     public void removePlayer(int key){
         int [][] newMat = new int[matrix.length-1][matrix.length-1];
-
         for (int i = 0; i < key; i++){
             for (int j = 0; j < key; j++){
                 newMat[i][j] = matrix[i][j];
