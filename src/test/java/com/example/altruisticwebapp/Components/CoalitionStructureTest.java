@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoalitionStructureTest {
 
     @Test
-    void getPlayersCoalition() throws NoPlayerSetAssignedException, PlayerNotFoundException {
+    void getPlayersCoalition() throws NoPlayerSetAssignedException {
         Game g = new Game(2);
         CoalitionStructure cs = new CoalitionStructure();
 
@@ -52,11 +52,11 @@ class CoalitionStructureTest {
         g.getNetwork().addFriendship(3, 4);
         g.getNetwork().addFriendship(16,18);
         CoalitionStructure cs = g.singletons();
-        assertTrue(cs.individuallyRational(g, LOA.ETavg));
+        assertTrue(cs.individuallyRational(g, LOA.ETavg, false));
     }
 
     @Test
-    void nashStable() throws NoNetworkAssignedException, NoPlayerSetAssignedException, PlayerNotFoundException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    void nashStable() throws NoNetworkAssignedException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
         Game g = new Game(5);
         g.getNetwork().addFriendship(0, 1);
         g.getNetwork().addFriendship(2, 3);
@@ -73,7 +73,7 @@ class CoalitionStructureTest {
         cs.addCoalition(c1);
         cs.addCoalition(c2);
         cs.addCoalition(c3);
-        assertTrue(cs.nashStable(g, LOA.ETavg));
+        assertTrue(cs.nashStable(g, LOA.ETavg, false));
     }
 
     @Test
@@ -94,7 +94,7 @@ class CoalitionStructureTest {
         cs.addCoalition(c1);
         cs.addCoalition(c2);
         cs.addCoalition(c3);
-        assertTrue(cs.individuallyStable(g, LOA.ETavg));
+        assertTrue(cs.individuallyStable(g, LOA.ETavg, false));
     }
 
     @Test
@@ -115,7 +115,7 @@ class CoalitionStructureTest {
         cs.addCoalition(c1);
         cs.addCoalition(c2);
         cs.addCoalition(c3);
-        assertTrue(cs.contractuallyIndividuallyStable(g, LOA.ETavg));
+        assertTrue(cs.contractuallyIndividuallyStable(g, LOA.ETavg, false));
     }
 
     @Test
@@ -155,7 +155,7 @@ class CoalitionStructureTest {
                 System.out.println("    UtilityALavg: " + g.getPlayer(i).utilityATavg(cs.get(j), g.getNetwork()));
             }
         }
-        assertTrue(cs.perfect(g, LOA.ETavg));
+        assertTrue(cs.perfect(g, LOA.ETavg, false));
     }
 
     @Test
@@ -183,5 +183,45 @@ class CoalitionStructureTest {
         assertEquals(1, c.getKey());
         assertTrue(cs.containsKey(1));
         assertEquals(c, cs.get(1));
+    }
+
+    @Test
+    void edgeCaseNash() throws NoNetworkAssignedException, NoPlayerSetAssignedException, CoalitionIsNullException, InvalidLevelOfAltruismException {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(0, 2);
+        Coalition player012 = new Coalition();
+        Coalition player3 = new Coalition();
+        Coalition player4 = new Coalition();
+        player012.add(g.getPlayer(0));
+        player012.add(g.getPlayer(1));
+        player012.add(g.getPlayer(2));
+        player3.add(g.getPlayer(3));
+        player4.add(g.getPlayer(4));
+        CoalitionStructure cs = new CoalitionStructure();
+        cs.addCoalition(player012);
+        cs.addCoalition(player3);
+        cs.addCoalition(player4);
+        assertTrue(cs.nashStable(g, LOA.SFavg, false));
+    }
+
+    @Test
+    void notPerfect() throws Exception {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(0, 2);
+        Coalition player012 = new Coalition();
+        Coalition player3 = new Coalition();
+        Coalition player4 = new Coalition();
+        player012.add(g.getPlayer(0));
+        player012.add(g.getPlayer(1));
+        player012.add(g.getPlayer(2));
+        player3.add(g.getPlayer(3));
+        player4.add(g.getPlayer(4));
+        CoalitionStructure cs = new CoalitionStructure();
+        cs.addCoalition(player012);
+        cs.addCoalition(player3);
+        cs.addCoalition(player4);
+        assertFalse(cs.perfect(g, LOA.SFavg, false));
     }
 }

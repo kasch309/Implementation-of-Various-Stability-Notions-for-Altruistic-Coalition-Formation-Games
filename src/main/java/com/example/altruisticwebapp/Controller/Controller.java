@@ -4,7 +4,6 @@ import com.example.altruisticwebapp.Components.*;
 import com.example.altruisticwebapp.Exceptions.*;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -112,7 +111,7 @@ public class Controller {
 
     @PostMapping("/addPlayerToCoalition")
     public String addPlayerToCoalition(@RequestParam("player") int key, @RequestParam("coalitionId") int coal)
-            throws NoPlayerSetAssignedException, PlayerNotFoundException {
+            throws NoPlayerSetAssignedException {
         cs.getPlayersCoalition(g.getPlayer(key)).remove(g.getPlayer(key));
         cs.getCoalition(coal).add(g.getPlayer(key));
         return re;
@@ -147,7 +146,7 @@ public class Controller {
 
     @GetMapping("/analysis")
     public String analysis(Model model)
-            throws NoPlayerSetAssignedException, NoNetworkAssignedException, PlayerNotFoundException {
+            throws NoPlayerSetAssignedException, NoNetworkAssignedException {
         model.addAttribute("player_set", g.getPlayers());
         model.addAttribute("coalition_structure", cs);
         model.addAttribute("friendMatrix", g.getNetwork());
@@ -191,7 +190,7 @@ public class Controller {
         }
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         if (perfect && !res.perfect) {
-            if (cs.perfect(g, loa)) {
+            if (cs.perfect(g, loa, true)) {
                 res.perfect = true;
                 res.strictlyPopular = true;
                 res.popular = true;
@@ -201,97 +200,66 @@ public class Controller {
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
                 res.coreStable = true;
-                g.log(logStr.Perf);
-                g.log(logStr.SP);
-                g.log(logStr.P);
-                g.log(logStr.SCS);
-                g.log(logStr.CS);
-                g.log(logStr.Nash);
-                g.log(logStr.IS);
-                g.log(logStr.CIS);
-                g.log(logStr.IR);
-
-
+                g.log("Per implication this coalition structure fulfills all of the stability concepts on the left too.");
             }
-            else g.log(logStr.notPerf);
         }
         if (strictlyPopular && !res.strictlyPopular) {
-            if (cs.strictlyPopular(g, loa)) {
+            if (cs.strictlyPopular(g, loa, true)) {
                 res.strictlyPopular = true;
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
-                g.log(logStr.SP);
-                g.log(logStr.P);
-                g.log(logStr.CIS);
+                g.log("Per implication this coalition structure is popular and contractually individually stable too.");
             }
-            else g.log(logStr.notSP);
         }
         if (popular && !res.popular) {
-            if (cs.popular(g, loa)) {
+            if (cs.popular(g, loa, true)) {
                 res.popular = true;
                 res.contractuallyIndividuallyStable = true;
-                g.log(logStr.P);
-                g.log(logStr.CIS);
+                g.log("Per implication this coalition structure is contractually individually stable too.");
             }
-            else g.log(logStr.notP);
         }
         if (strictlyCoreStable && !res.strictlyCoreStable) {
-            if (cs.strictlyCoreStable(g, loa)) {
+            if (cs.strictlyCoreStable(g, loa, true)) {
                 res.strictlyCoreStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyStable = true;
                 res.individuallyRational = true;
                 res.coreStable = true;
-                g.log(logStr.SCS);
-                g.log(logStr.CIS);
-                g.log(logStr.IS);
-                g.log(logStr.IR);
-                g.log(logStr.CS);
+                g.log("Per implication this coalition structure is core stable, contractually individually stable, individually stable and individually rational too.");
             }
-            else g.log(logStr.notSCS);
         }
         if (nashStable && !res.nashStable) {
-            if (cs.nashStable(g, loa)) {
+            if (cs.nashStable(g, loa, true)) {
                 res.nashStable = true;
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
-                g.log(logStr.Nash);
-                g.log(logStr.IS);
-                g.log(logStr.CIS);
-                g.log(logStr.IR);
+                g.log("Per implication this coalition structure is contractually individually stable, individually stable and individually rational too.");
+
             }
-            else g.log(logStr.notNash);
         }
         if (individuallyStable && !res.individuallyStable) {
-            if (cs.individuallyStable(g, loa)) {
+            if (cs.individuallyStable(g, loa, true)) {
                 res.individuallyStable = true;
                 res.contractuallyIndividuallyStable = true;
                 res.individuallyRational = true;
-                g.log(logStr.IS);
-                g.log(logStr.CIS);
-                g.log(logStr.IR);
+                g.log("Per implication this coalition structure is contractually individually stable and individually rational too.");
+
             }
-            else g.log(logStr.notIS);
         }
         if (coreStable && !res.coreStable) {
-            if (cs.coreStable(g, loa)) {
+            if (cs.coreStable(g, loa, true)) {
                 res.coreStable = true;
                 res.individuallyRational = true;
-                g.log(logStr.CS);
-                g.log(logStr.IR);
+                g.log("Per implication this coalition structure is individually rational too.");
+
             }
-            else g.log(logStr.notCS);
         }
         if (contractuallyIndividuallyStable && !res.contractuallyIndividuallyStable) {
-            res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g, loa);
-            if (res.contractuallyIndividuallyStable) g.log(logStr.CIS);
-            else g.log(logStr.notCIS);
+            res.contractuallyIndividuallyStable = cs.contractuallyIndividuallyStable(g, loa, true);
         }
         if (individuallyRational && !res.individuallyRational) {
-            res.individuallyRational = cs.individuallyRational(g, loa);
-            if (res.individuallyRational) g.log(logStr.IR);
-            else g.log(logStr.notIR);
+            res.individuallyRational = cs.individuallyRational(g, loa, true);
         }
         return "redirect:/analysis";
     }
@@ -310,49 +278,48 @@ public class Controller {
                                           @RequestParam(required = false, value = "perfect") boolean perfect) throws Exception {
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
-        g.addEntry(all.size() + " coalition structures generated.");
         for (CoalitionStructure csAll : all) {
             if (individuallyRational) {
-                if (!csAll.individuallyRational(g, loa))
+                if (!csAll.individuallyRational(g, loa, false))
                     continue;
             }
             if (nashStable) {
-                if (!csAll.nashStable(g, loa))
+                if (!csAll.nashStable(g, loa, false))
                     continue;
             }
             if (individuallyStable) {
-                if (!csAll.individuallyStable(g, loa))
+                if (!csAll.individuallyStable(g, loa, false))
                     continue;
             }
             if (contractuallyIndividuallyStable) {
-                if (!csAll.contractuallyIndividuallyStable(g, loa))
+                if (!csAll.contractuallyIndividuallyStable(g, loa, false))
                     continue;
             }
             if (strictlyPopular) {
-                if (!csAll.strictlyPopular(g, loa))
+                if (!csAll.strictlyPopular(g, loa, false))
                     continue;
             }
             if (popular) {
-                if (!csAll.popular(g, loa))
+                if (!csAll.popular(g, loa, false))
                     continue;
             }
             if (coreStable) {
-                if (!csAll.coreStable(g, loa))
+                if (!csAll.coreStable(g, loa, false))
                     continue;
             }
             if (strictlyCoreStable) {
-                if (!csAll.strictlyCoreStable(g, loa))
+                if (!csAll.strictlyCoreStable(g, loa, false))
                     continue;
             }
             if (perfect) {
-                if (!csAll.perfect(g, loa))
+                if (!csAll.perfect(g, loa, false))
                     continue;
             }
             this.csconstruct = csAll;
-            g.addEntry("The coalition structure generated fulfilled the requirements. If you want to check for other stability concepts for this coalition structure, click the button below and use the Analysis tab.");
+            g.addEntry("The coalition structure generated fulfilled the checked requirements. If you want to check for other stability concepts for this coalition structure, click the button below and use the Analysis tab.");
             return "redirect:/construction";
         }
-        g.addEntry("There exists no coalition structure fulfilling the requirements.");
+        g.addEntry("There exists no coalition structure fulfilling the checked requirements.");
         return "redirect:/construction";
     }
 

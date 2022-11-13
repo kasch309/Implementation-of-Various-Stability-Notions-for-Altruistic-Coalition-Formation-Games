@@ -20,9 +20,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         c.setKey(this.size());
         c.setName("Coalition " + c.getKey());
         this.put(this.size(), c);
-        for (int i = 0; i<this.size(); i++){
-            System.out.println(this.get(i).getName());
-        }
         fixNames();
 
     }
@@ -125,86 +122,110 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         return weakBlockers;
     }
 
-    public boolean individuallyRational(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    public boolean individuallyRational(Game g, LOA loa, boolean infos) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
         for (int i = 0; i < g.getSize(); i++){
             if (!g.getPlayer(i).acceptable(getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
+                if (infos) g.log("Not individually rational: Player '" + g.getPlayer(i).getName() + "' did not find his coalition acceptable.");
                 return false;
             }
         }
+        if (infos) g.log("The coalition structure is individually rational");
         return true;
     }
 
-    public boolean nashStable(Game g, LOA loa) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    public boolean nashStable(Game g, LOA loa, boolean infos) throws NoPlayerSetAssignedException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         // For all players i their own coalition is weakly preferred to any other, if it would contain i additionally
-        CoalitionStructure test = duplicate(this);
         Coalition empty = new Coalition();
-        test.addCoalition(empty);
-        for (int piterator = 0; piterator < g.getSize(); piterator++){ //Player iterator i
-            for (int citerator = 0; citerator < test.size(); citerator++){ //Coalition iterator j
-                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
-                if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) return false;
-                //Check if each player prefers the coalition he is on over each other one if it would contiain him.
+        for (int piterator = 0; piterator < g.getSize(); piterator++){ //Player iterator
+            for (int citerator = 0; citerator < this.size(); citerator++){ //Coalition iterator
+                if (!this.get(citerator).equals(this.getPlayersCoalition(g.getPlayer(piterator)))){
+                    Coalition c = new Coalition();
+                    c.addAll(this.get(citerator));
+                    c.add(g.getPlayer(piterator));
+                    if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), c, g.getNetwork(), loa)) {
+                        for (int i = 0; i < this.size(); i++){
+                            if (this.get(i) == empty) this.remove(i);
+                        }
+                        if (infos) g.log("Not Nash stable: Player '" + g.getPlayer(piterator).getName() + "' prefers coalition '"+ this.get(citerator).getName() + "' over the one he is in right now.");
+                        return false;
+                    }
+                    //Check if each player prefers the coalition he is on over each other one if it would contiain him.
+                }
             }
         }
+        for (int i = 0; i < this.size(); i++){
+            if (this.get(i) == empty) this.remove(i);
+        }
+        if (infos) g.log("The coalition structure is Nash stable.");
         return true;
     }
 
-    public boolean individuallyStable(Game g, LOA loa) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    public boolean individuallyStable(Game g, LOA loa, boolean infos) throws NoNetworkAssignedException, PlayerNotFoundException, NoPlayerSetAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
         contains them too or there is a player j who prefers c if it contains i too
         */
 
-        CoalitionStructure test = duplicate(this);
         Coalition empty = new Coalition();
-        test.addCoalition(empty);
+        this.addCoalition(empty);
         for (int piterator = 0; piterator < g.getSize(); piterator++) { //Player iterator
-            for (int citerator = 0; citerator < test.size(); citerator++) { //Coalition iterator
-                Coalition comp = test.get(citerator);
-                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
-                if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(test.get(citerator)))continue;
-                if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) {
-                    //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
-                    boolean thereis = false;
-                    for (Player p : comp) {
-                        if (thereis) break;
-                        if (p.prefers(comp, test.get(citerator), g.getNetwork(), loa)) thereis = true;
+            for (int citerator = 0; citerator < this.size(); citerator++) {//Coalition iterator
+                if (!this.getPlayersCoalition(g.getPlayer(piterator)).equals(this.get(citerator))){
+                    Coalition c = new Coalition();
+                    c.addAll(this.get(citerator));
+                    c.add(g.getPlayer(piterator));
+                    if (!g.getPlayer(piterator).weaklyPrefers(this.getPlayersCoalition(g.getPlayer(piterator)), c, g.getNetwork(), loa)) {
+                        //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
+                        boolean thereis = false;
+                        for (Player p : c) {
+                            if (thereis) break;
+                            if (p.prefers(c, this.get(citerator), g.getNetwork(), loa)) thereis = true;
+                        }
+                        if (!thereis) {
+                            for (int i = 0; i < this.size(); i++){
+                                if (this.get(i) == empty) this.remove(i);
+                            }
+                            if (infos) g.log("Not individually stable: There is a player who prefers another coalition over the one he is in, but he would harm other players in his preferred coalition.");
+                            return false;
+                        }
                     }
-                    if (!thereis) return false;
                 }
             }
         }
+        for (int i = 0; i < this.size(); i++){
+            if (this.get(i) == empty) this.remove(i);
+        }
+        if (infos) g.log("The coalition structure is individually stable.");
         return true;
     }
 
-    public boolean contractuallyIndividuallyStable(Game g, LOA loa) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
+    public boolean contractuallyIndividuallyStable(Game g, LOA loa, boolean infos) throws NoPlayerSetAssignedException, PlayerNotFoundException, NoNetworkAssignedException, InvalidLevelOfAltruismException, CoalitionIsNullException {
 
         /*
         For all players i they either weakly prefer their own coalition to any other coalition c if the other one
         contains them too or there is a player j who prefers c if it contains i too OR there is player k, i != k, k
         is in coalition of i, k prefers coalition of i over coalition of i if it would not contain i
         */
-        CoalitionStructure test = duplicate(this);
         Coalition empty = new Coalition();
-        test.addCoalition(empty);
+        this.addCoalition(empty);
         for (int piterator = 0; piterator < g.getSize(); piterator++) { //Player iterator
-            for (int citerator = 0; citerator < test.size(); citerator++) { //Coalition iterator
-                Coalition comp = test.get(citerator);
-                test.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
-                if (!g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), test.get(citerator), g.getNetwork(), loa)) {
-                    if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(test.get(citerator)))continue;
+            for (int citerator = 0; citerator < this.size(); citerator++) { //Coalition iterator
+                Coalition comp = this.get(citerator);
+                this.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
+                if (!g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), this.get(citerator), g.getNetwork(), loa)) {
+                    if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(this.get(citerator)))continue;
                     //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
                     boolean thereis = false;
                     for (Player p : comp) {
                         if (thereis) break;
-                        if (p.prefers(comp, test.get(citerator), g.getNetwork(), loa)) thereis = true;
+                        if (p.prefers(comp, this.get(citerator), g.getNetwork(), loa)) thereis = true;
                     }
                     if (!thereis){
-                        Coalition withoutPlayer = this.getPlayersCoalition(g.getPlayer(piterator)).duplicate();
+                        Coalition withoutPlayer = new Coalition();
+                        withoutPlayer.addAll(this.getPlayersCoalition(g.getPlayer(piterator)));
                         withoutPlayer.remove(g.getPlayer(piterator));
-                        if (withoutPlayer.contains(g.getPlayer(piterator))) g.log("Player still inside.");
                         for (Player p : this.getPlayersCoalition(g.getPlayer(piterator))){
                             if (thereis) break;
                             if (p.equals(g.getPlayer(piterator))) continue;
@@ -212,17 +233,24 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                                 thereis = true;
                         }
                         if (!thereis) {
-                            g.log("No player k found");
+                            if (infos) g.log("Not contractually individually stable: There is a player who prefers another coalition over the one he is in, but he would harm other players in his preferred or original coalition.");
+                            for (int i = 0; i < this.size(); i++){
+                                if (this.get(i) == empty) this.remove(i);
+                            }
                             return false;
                         }
                     }
                 }
             }
         }
+        for (int i = 0; i < this.size(); i++){
+            if (this.get(i) == empty) this.remove(i);
+        }
+        if (infos) g.log("The coalition structure is individually stable.");
         return true;
     }
 
-    public boolean strictlyPopular(Game g, LOA loa) throws Exception {
+    public boolean strictlyPopular(Game g, LOA loa, boolean infos) throws Exception {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
@@ -233,13 +261,17 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                     if (g.getPlayer(piterator).prefers(cs.getPlayersCoalition(g.getPlayer(piterator)), this.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countCmp++;
 
                 }
-                if (!(countThis > countCmp)) return false;
+                if (!(countThis > countCmp)) {
+                    if (infos) g.log("Not strictly popular: There is another coalition structure in which more or equally many players prefer the coalition they are in than in the present coalition structure. ");
+                    return false;
+                }
             }
         }
+        if (infos) g.log("The coalition structure is strictly popular.");
         return true;
     }
 
-    public boolean popular(Game g, LOA loa) throws Exception {
+    public boolean popular(Game g, LOA loa, boolean infos) throws Exception {
         int countThis = 0;
         int countCmp = 0;
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
@@ -250,68 +282,83 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                     if (g.getPlayer(piterator).prefers(cs.getPlayersCoalition(g.getPlayer(piterator)), this.getPlayersCoalition(g.getPlayer(piterator)), g.getNetwork(), loa)) countCmp++;
 
                 }
-                if (!(countThis >= countCmp)) return false;
+                if (!(countThis >= countCmp)) {
+                    if (infos) g.log("Not popular: There is another coalition structure in which more players prefer the coalition they are in than in the present coalition structure. ");
+                    return false;
+                }
             }
         }
+        if (infos) g.log("The coalition structure is popular.");
         return true;
     }
 
-    public boolean coreStable(Game g, LOA loa) throws Exception {
+    public boolean coreStable(Game g, LOA loa, boolean infos) throws Exception {
         HashSet<Coalition> blockers = blockingCoalitions(g, loa);
 
-        if (blockers.isEmpty()) return true;
+        if (blockers.isEmpty()) {
+            if (infos) g.log("The coalition structure is core stable.");
+            return true;
+        }
         else{
-            String str = "";
-            for (Coalition b : blockers){
-                for (Player p : b){
-                    str = str.concat(p.getName());
-                    str = str.concat(", ");
+            if (infos) {
+                for (Coalition b : blockers){
+                    String str = "";
+                    for (Player p : b){
+                        str = str.concat(p.getName());
+                        str = str.concat(", ");
+                    }
+                    g.addEntry("Not core stable: There are blocking coalitions. For example, the coalition containing " + str + " blocks.");
+                    break;
                 }
-
-                g.addEntry("The coalition containing " + str + " blocks.");
-                break;
             }
             return false;
         }
     }
 
-    public boolean strictlyCoreStable(Game g, LOA loa) throws Exception {
+    public boolean strictlyCoreStable(Game g, LOA loa, boolean infos) throws Exception {
         HashSet<Coalition> weakBlockers = weaklyBlockingCoalitions(g, loa);
         if(weakBlockers.isEmpty()){
+            if (infos) g.log("The coalition structure is strictly core stable.");
             return true;
         }
         else {
-            String str = "";
-            for (Coalition b : weakBlockers){
-                for (Player p : b){
-                    str = str.concat(p.getName());
-                    str = str.concat(", ");
+            if (infos) {
+                for (Coalition b : weakBlockers){
+                    String str = "";
+                    for (Player p : b){
+                        str = str.concat(p.getName());
+                        str = str.concat(", ");
+                    }
+                    g.addEntry("Not strictly core stable: There are weakly blocking coalitions. For example, the coalition containing " + str + " blocks weakly.");
+                    break;
                 }
-
-                g.addEntry("The coalition containing " + str + " blocks weakly.");
-                break;
             }
             return false;
         }
     }
 
-    public boolean perfect(Game g, LOA loa) throws Exception {
+    public boolean perfect(Game g, LOA loa, boolean infos) throws Exception {
 
         // i prefers own coalition over any other possible one
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
 
-        for (CoalitionStructure cs : all){
-            for (int i = 0; i < g.getSize(); i++){
-                for (int j = 0; j < cs.size(); j++){
-                    Coalition c = cs.get(j).duplicate();
-                    if (getPlayersCoalition(g.getPlayer(j)) == null) throw new CoalitionIsNullException("Player has no coalition in cs.");
-                    if (c == null) throw new CoalitionIsNullException("Coalition c is null.");
-                    if (!g.getPlayer(j).weaklyPrefers(getPlayersCoalition(g.getPlayer(j)), c, g.getNetwork(), loa)) {
-                        return false;
+        for (int piterator = 0; piterator < g.getSize(); piterator++){
+            for (CoalitionStructure cs : all){
+                for (int citerator = 0; citerator < cs.size(); citerator++){
+                    if (cs.get(citerator).contains(g.getPlayer(piterator))){
+                        if (!g.getPlayer(piterator).weaklyPrefers(getPlayersCoalition(g.getPlayer(piterator)), cs.get(citerator), g.getNetwork(), loa)) {
+                            String playersPreferred = "";
+                            for (Player p : cs.get(citerator)){
+                                playersPreferred = playersPreferred.concat(p.getName() + ", ");
+                            }
+                            if (infos) g.log("Not perfect: Player '" + g.getPlayer(piterator).getName() + "' prefers the coalition containing " + playersPreferred + "over his own coalition in the present coalition structure.");
+                            return false;
+                        }
                     }
                 }
             }
         }
+        if (infos) g.log("The coalition structure is perfect.");
         return true;
     }
 }
