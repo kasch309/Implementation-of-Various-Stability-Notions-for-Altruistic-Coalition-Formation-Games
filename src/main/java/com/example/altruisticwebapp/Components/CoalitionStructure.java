@@ -24,17 +24,6 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
 
     }
 
-    public CoalitionStructure duplicate(CoalitionStructure cs){
-        CoalitionStructure dos = new CoalitionStructure();
-        for (int i = 0; i < cs.size(); i++){
-            dos.addCoalition(new Coalition());
-            for (int j = 0; j < cs.get(i).size(); j++){
-                dos.get(i).add(cs.get(j));
-            }
-        }
-        return dos;
-    }
-
     public Coalition getCoalition(int key){
         return this.get(key);
     }
@@ -75,17 +64,15 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         HashSet<Coalition> blockers = new HashSet<>();
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         for (CoalitionStructure cs : all){
-            for (int j = 0; j < cs.size(); j++){
+            for (int citerator = 0; citerator < cs.size(); citerator++){
                 boolean blocks = true;
-                for (int i = 0; i < g.getSize(); i++){
-                    if (cs.get(j).contains(g.getPlayer(i))){
-                        if (!g.getPlayer(i).prefers(cs.get(j), this.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
-                            blocks = false;
-                            break;
-                        }
+                for (Player p : cs.get(citerator)){
+                    if (!p.prefers(cs.get(citerator), this.getPlayersCoalition(p), g.getNetwork(), loa)) {
+                        blocks = false;
+                        break;
                     }
                 }
-                if (blocks) blockers.add(cs.get(j));
+                if (blocks) blockers.add(cs.get(citerator));
             }
         }
         return blockers;
@@ -101,22 +88,14 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         HashSet<Coalition> weakBlockers = new HashSet<>();
         HashSet<CoalitionStructure> all = g.getPlayers().generateCoalitionStructures();
         for (CoalitionStructure cs : all){
-            for (int j = 0; j < cs.size(); j++){
-                boolean blocks = false;
-                for (int i = 0; i < g.getSize(); i++){
-                    if (cs.get(j).contains(g.getPlayer(i))){
-                        if (g.getPlayer(i).prefers(cs.get(j), cs.getPlayersCoalition(g.getPlayer(i)), g.getNetwork(), loa)) {
-                            blocks = true;
-                            for (int k = 0; k < g.getSize(); k++){
-                                if (!g.getPlayer(k).weaklyPrefers(cs.get(j), this.getPlayersCoalition(g.getPlayer(k)), g.getNetwork(), loa)){
-                                    blocks = false;
-                                    break;
-                                }
-                            }
-                        }
+            for (int citerator = 0; citerator < cs.size(); citerator++){
+                boolean pref = false;
+                for (Player p : cs.get(citerator)){
+                    if (p.weaklyPrefers(cs.get(citerator), this.getPlayersCoalition(p), g.getNetwork(), loa)){
+                        if (p.prefers(cs.get(citerator), this.getPlayersCoalition(p), g.getNetwork(), loa)) pref = true;
                     }
                 }
-                if (blocks) weakBlockers.add(cs.get(j));
+                if (pref) weakBlockers.add(cs.get(citerator));
             }
         }
         return weakBlockers;
@@ -212,10 +191,11 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         this.addCoalition(empty);
         for (int piterator = 0; piterator < g.getSize(); piterator++) { //Player iterator
             for (int citerator = 0; citerator < this.size(); citerator++) { //Coalition iterator
-                Coalition comp = this.get(citerator);
-                this.get(citerator).add(g.getPlayer(piterator)); //Add player to coalition
-                if (!g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), this.get(citerator), g.getNetwork(), loa)) {
-                    if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(this.get(citerator)))continue;
+                Coalition comp = new Coalition(); //TODO FIXEN HIER
+                comp.addAll(this.get(citerator));
+                comp.add(g.getPlayer(piterator));
+                if (!g.getPlayer(piterator).prefers(this.getPlayersCoalition(g.getPlayer(piterator)), comp, g.getNetwork(), loa)) {
+                    if (this.getPlayersCoalition(g.getPlayer(piterator)).equals(comp)) continue;
                     //If player does not prefer his own coalition C over the other one plus him, then another player must prefer C over
                     boolean thereis = false;
                     for (Player p : comp) {
@@ -239,6 +219,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
                             }
                             return false;
                         }
+
                     }
                 }
             }
@@ -246,7 +227,7 @@ public class CoalitionStructure extends HashMap<Integer, Coalition> {
         for (int i = 0; i < this.size(); i++){
             if (this.get(i) == empty) this.remove(i);
         }
-        if (infos) g.log("The coalition structure is individually stable.");
+        if (infos) g.log("The coalition structure is contractually individually stable.");
         return true;
     }
 

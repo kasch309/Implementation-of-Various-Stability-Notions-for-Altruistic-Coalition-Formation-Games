@@ -20,8 +20,8 @@ public class Controller {
     Result res = new Result();
 
     public Controller() {
+        g = new Game(3);
         cs = new CoalitionStructure();
-        g = new Game(5);
     }
 
     @GetMapping("/")
@@ -78,9 +78,6 @@ public class Controller {
         if (!cs.isEmpty())
             cs.get(0).add(p);
         g.addPlayer(p);
-        System.out.println("Size: " + g.getPlayers().size());
-        g.getPlayers().printPlayers();
-
         return re;
     }
 
@@ -98,7 +95,7 @@ public class Controller {
 
     @GetMapping("/resetGame")
     public String resetGame() {
-        g = new Game(0);
+        g = new Game(3);
         cs = new CoalitionStructure();
         return re;
     }
@@ -183,11 +180,6 @@ public class Controller {
             @RequestParam(required = false, value = "perfect") boolean perfect)
             throws Exception {
         res = new Result();
-        System.out.println("Size: " + g.getSize());
-        g.getPlayers().printPlayers();
-        for (int i = 0; i < g.getSize(); i++) {
-            System.out.println(g.getPlayer(i).getKey());
-        }
         LOA loa = LOA.stringToEnum(valueBase, treatment);
         if (perfect && !res.perfect) {
             if (cs.perfect(g, loa, true)) {
@@ -316,7 +308,15 @@ public class Controller {
                     continue;
             }
             this.csconstruct = csAll;
-            g.addEntry("The coalition structure generated fulfilled the checked requirements. If you want to check for other stability concepts for this coalition structure, click the button below and use the Analysis tab.");
+            if (perfect) g.log(logStr.Perf);
+            if (strictlyCoreStable) g.log(logStr.SCS);
+            if (coreStable) g.log(logStr.CS);
+            if (strictlyPopular) g.log(logStr.SP);
+            if (popular) g.log(logStr.P);
+            if (contractuallyIndividuallyStable) g.log(logStr.CIS);
+            if (individuallyStable) g.log(logStr.IS);
+            if (nashStable) g.log(logStr.Nash);
+            if (individuallyRational) g.log(logStr.IR);
             return "redirect:/construction";
         }
         g.addEntry("There exists no coalition structure fulfilling the checked requirements.");

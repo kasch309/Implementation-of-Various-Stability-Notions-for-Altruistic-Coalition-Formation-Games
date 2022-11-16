@@ -146,15 +146,6 @@ class CoalitionStructureTest {
         cs.get(2).add(g.getPlayer(2));
         cs.addCoalition(new Coalition());
         cs.get(3).add(g.getPlayer(3));
-        for (int i = 0; i < 4; i++){
-            System.out.println("Player " + i + ":");
-            for (int j = 0; j < 4; j++){
-                System.out.println("  Coalition " + j + ":");
-                System.out.println("    UtilitySFavg: " + g.getPlayer(i).utilitySFavg(cs.get(j), g.getNetwork()));
-                System.out.println("    UtilityEQavg: " + g.getPlayer(i).utilityETavg(cs.get(j), g.getNetwork()));
-                System.out.println("    UtilityALavg: " + g.getPlayer(i).utilityATavg(cs.get(j), g.getNetwork()));
-            }
-        }
         assertTrue(cs.perfect(g, LOA.ETavg, false));
     }
 
@@ -223,5 +214,45 @@ class CoalitionStructureTest {
         cs.addCoalition(player3);
         cs.addCoalition(player4);
         assertFalse(cs.perfect(g, LOA.SFavg, false));
+    }
+
+    @Test
+    void perfectMinAl() throws Exception {
+        Game g = new Game(4);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(0, 2);
+        g.getNetwork().addFriendship(0, 3);
+        g.getNetwork().addFriendship(1, 2);
+        g.getNetwork().addFriendship(1, 3);
+        g.getNetwork().addFriendship(2, 3);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c = new Coalition();
+        c.add(g.getPlayer(0));
+        c.add(g.getPlayer(1));
+        c.add(g.getPlayer(2));
+        c.add(g.getPlayer(3));
+        cs.addCoalition(c);
+        assertTrue(cs.perfect(g, LOA.ATmin, false));
+    }
+
+    @Test
+    void ScsAvgSf() throws Exception {
+        Game g = new Game(5);
+        g.getNetwork().addFriendship(0, 1);
+        g.getNetwork().addFriendship(0, 2);
+        g.getNetwork().addFriendship(2, 3);
+        CoalitionStructure cs = new CoalitionStructure();
+        Coalition c1 = new Coalition();
+        c1.add(g.getPlayer(1));
+        Coalition c02 = new Coalition();
+        c02.add(g.getPlayer(0));
+        c02.add(g.getPlayer(2));
+        Coalition c34 = new Coalition();
+        c34.add(g.getPlayer(3));
+        c34.add(g.getPlayer(4));
+        cs.addCoalition(c1);
+        cs.addCoalition(c02);
+        cs.addCoalition(c34);
+        assertFalse(cs.strictlyCoreStable(g, LOA.SFavg, false));
     }
 }

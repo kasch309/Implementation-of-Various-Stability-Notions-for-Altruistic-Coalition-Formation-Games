@@ -359,7 +359,7 @@
                                         gravitationalConstant: 0.05,
                                         splitSeries: true,
                                         seriesInteraction: false,
-                                        dragBetweenSeries: true,
+                                        dragBetweenSeries: false,
                                         parentNodeLimit: true,
                                     },
                                     dataLabels: {
@@ -534,7 +534,7 @@
                 <ul class="list-group">
                     <li
                             th:each="entry: ${log}"
-                            th:attr="class=${entry.value.contains('Not') || entry.value.contains('block') ? 'list-group-item list-group-item-danger' : 'list-group-item list-group-item-success'}"
+                            th:attr="class=${entry.value.contains('Not')  || entry.value.contains('exists no')|| entry.value.contains('block') ? 'list-group-item list-group-item-danger' : 'list-group-item list-group-item-success'}"
                     >
                         <span th:text="${entry.value}"></span>
                     </li>

@@ -95,23 +95,22 @@ public class Coalition extends HashSet<Player> {
 
     public double min(Player p, NetworkOfFriends nw){
         double minVal = 1000;
+        boolean hasFriends = false;
         for (Player q : this){
             if (p.areFriends(q, nw)) {
+                hasFriends = true;
                 int val = value(q, nw);
                 if (val < minVal){
                     minVal = val;
                 }
             }
         }
+        if (!hasFriends) return 0;
         return minVal;
     }
-
     public double minPlus(Player p, NetworkOfFriends nw){
         double minVal = min(p, nw);
         if (value(p, nw) < minVal) minVal = value(p, nw);
         return minVal;
-    }
-
-    public void add(Coalition players) {
     }
 }

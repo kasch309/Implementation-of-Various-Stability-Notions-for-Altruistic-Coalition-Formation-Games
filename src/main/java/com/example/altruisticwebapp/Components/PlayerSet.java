@@ -16,12 +16,6 @@ public class PlayerSet extends HashMap<Integer, Player> {//generell was geht hie
             this.put(i, new Player(i));
         }
     }
-
-    public void printPlayers(){
-        for (int i = 0; i < size(); i++){
-            System.out.println(get(i).getName() + ", " + get(i).getKey());
-        }
-    }
     public void add(Player p, NetworkOfFriends nw) {
         if (this.containsPlayerWithName(p.getName())) p.setName("Duplicate " + p.getName());
         p.setKey(this.size());

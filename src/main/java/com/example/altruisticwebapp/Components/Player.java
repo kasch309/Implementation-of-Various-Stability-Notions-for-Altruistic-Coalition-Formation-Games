@@ -79,28 +79,20 @@ public class Player {
     public double utilitySFmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         //min of values that friends give coalition
         if (a == null) throw new CoalitionIsNullException("Player " + this.name);
-
         int M = (int) Math.pow(nw.getSize(), 3);
-        double utility = 0;
-        utility = M * a.value(this, nw) + a.min(this, nw);
-        return utility;
+        return (M * a.value(this, nw) + a.min(this, nw));
     }
 
     public double utilityETmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         if (a == null) throw new CoalitionIsNullException("Player " + this.name);
-
-        double utility = 0;
-        utility = a.minPlus(this, nw);
-        return utility;
+        return a.minPlus(this, nw);
     }
 
     public double utilityATmin(Coalition a, NetworkOfFriends nw) throws CoalitionIsNullException {
         if (a == null) throw new CoalitionIsNullException("Player " + this.name);
 
         int M = (int) Math.pow(nw.getSize(), 3);
-        double utility = 0;
-        utility = a.value(this, nw) + M * a.min(this, nw);
-        return utility;
+        return a.value(this, nw) + M * a.min(this, nw);
     }
     
     public boolean weaklyPrefers(Coalition a, Coalition b, NetworkOfFriends nw, LOA loa) throws InvalidLevelOfAltruismException, CoalitionIsNullException {
